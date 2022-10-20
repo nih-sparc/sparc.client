@@ -25,6 +25,7 @@ jobs:
         pip install --progress-bar off -U .[checking]
     - name: Apply formatters
       run: |
+        pip install black blackdog isort
         black .
         blackdoc .
         isort .
