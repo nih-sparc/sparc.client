@@ -38,7 +38,8 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        python -m pytest --cov=sparc.client --cov-report=xml tests/
+        PYTHONPATH=src
+        pytest --cov=. --cov-report=xml tests/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
