@@ -1,7 +1,11 @@
 import pytest
-from sparc.client import Agent
+import sparc.client
 
 
 def test_alive():
-    agent=Agent()
+    agent = Agent()
     assert agent.alive()
+
+
+def test_version():
+    assert sparc.client.__version__ is not None
