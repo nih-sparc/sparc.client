@@ -3,7 +3,7 @@ import sparc.client
 
 
 def test_alive():
-    agent = Agent()
+    agent = sparc.client.Agent()
     assert agent.alive()
 
 
