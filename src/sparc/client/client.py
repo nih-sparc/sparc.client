@@ -53,3 +53,6 @@ class SparcClient(object):
     def connect(self):
         for module_name in self.module_names:
             getattr(self, module_name).connect()
+
+    def alive(self):
+        return True
