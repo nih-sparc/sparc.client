@@ -63,17 +63,18 @@ exclude = '''
 )/
 '''
 
+[tool.setuptools.packages.find]
+where = ["src", "config"]
+
+[tool.setuptools.package-data]
+"*" = ["*.ini", "*.txt"]
 
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-
 [tool.pytest.ini_options]
 addopts = "-ra -q"
 testpaths = [
   "tests",
-]
-pythonpath = [
-  ".", "src",
 ]
