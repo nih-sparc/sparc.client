@@ -45,6 +45,7 @@ class SparcClient(object):
                 ):
                     # Add the class to this package's variables
                     self.module_names.append(module_name)
+                    logging.debug(str(config[current_config]))
                     c = attribute(connect=False, config=config[current_config])
                     setattr(self, module_name, c)
                     if connect:

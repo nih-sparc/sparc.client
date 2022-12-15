@@ -26,11 +26,11 @@ class PennsieveService(ServiceBase):
         else:
             self.profile_name = None
 
-        print(self.profile_name)
+        logging.info("Profile: " + self.profile_name)
         if connect:
             self.connect()  # profile_name=self.profile_name)
 
-    def connect(self) -> Pennsieve:
+    def connect(self):
         logging.info("Connecting to Pennsieve...")
 
         if self.profile_name is not None:

@@ -33,6 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "pennsieve2 >= 0.0.5",
   "pytest < 5.0.0",
   "pytest-cov[all]"
 ]
@@ -42,7 +43,7 @@ test = [
 homepage = "https://sparc.science"
 documentation = "https://github.com/nih-sparc/sparc.client/README.md"
 repository = "https://github.com/nih-sparc/sparc.client"
-changelog = "https://github.com/nih-sparc/sparc.client/CHANGELOG"
+changelog = "https://github.com/nih-sparc/sparc.client/CHANGELOG.md"
 
 
 [tool.black]
