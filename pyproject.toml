@@ -71,7 +71,7 @@ where = ["src", "config"]
 "*" = ["*.ini", "*.txt"]
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "pennsieve2"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
