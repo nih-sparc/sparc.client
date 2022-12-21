@@ -6,7 +6,6 @@ from inspect import isabstract, isclass
 from pathlib import Path
 from pkgutil import iter_modules
 
-
 package_dir = os.path.join(Path(__file__).resolve().parent)
 
 for (_, module_name, _) in iter_modules([package_dir]):
