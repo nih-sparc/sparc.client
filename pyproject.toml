@@ -33,6 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "pennsieve2 >= 0.1.0",
   "pytest < 5.0.0",
   "pytest-cov[all]"
 ]
@@ -42,7 +43,7 @@ test = [
 homepage = "https://sparc.science"
 documentation = "https://github.com/nih-sparc/sparc.client/README.md"
 repository = "https://github.com/nih-sparc/sparc.client"
-changelog = "https://github.com/nih-sparc/sparc.client/CHANGELOG"
+changelog = "https://github.com/nih-sparc/sparc.client/CHANGELOG.md"
 
 
 [tool.black]
@@ -63,11 +64,15 @@ exclude = '''
 )/
 '''
 
+[tool.setuptools.packages.find]
+where = ["src", "config"]
+
+[tool.setuptools.package-data]
+"*" = ["*.ini", "*.txt"]
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "pennsieve2"]
 build-backend = "setuptools.build_meta"
-
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
