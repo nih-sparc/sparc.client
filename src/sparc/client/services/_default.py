@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 class ServiceBase(ABC):
     @abstractmethod
-    def __init__(self, connect, *args, **kwargs) -> None:
+    def __init__(self, config, connect: bool, *args, **kwargs) -> None:
         raise NotImplementedError
 
     @abstractmethod
