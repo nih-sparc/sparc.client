@@ -17,7 +17,7 @@ class PennsieveService(ServiceBase):
 
     host_api = "https://api.pennsieve.io"
 
-    def __init__(self, target="localhost:9000", config=None, connect=False) -> None:
+    def __init__(self, config=None, connect=False) -> None:
         logging.info("Initializing Pennsieve...")
         logging.debug(str(config))
 
