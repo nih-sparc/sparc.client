@@ -1,7 +1,6 @@
 import importlib
 import logging
 import os
-
 from configparser import ConfigParser
 from inspect import isclass, isabstract
 from pkgutil import iter_modules
