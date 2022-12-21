@@ -11,5 +11,3 @@ def test_init():
 def test_alive():
     a = SparcClient(connect=False)
     assert a.alive()
-
-
