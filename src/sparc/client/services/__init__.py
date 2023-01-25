@@ -6,7 +6,6 @@ from pkgutil import iter_modules
 
 from ._default import ServiceBase
 
-
 package_dir = os.path.join(Path(__file__).resolve().parent)
 
 
