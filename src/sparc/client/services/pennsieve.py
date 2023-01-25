@@ -1,6 +1,5 @@
 import logging
 import os
-import requests
 
 from pennsieve2 import Pennsieve
 
