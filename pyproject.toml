@@ -33,7 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-  "pennsieve2 >= 0.1.0",
+  "pennsieve2 >=1.1.0",
   "pytest < 5.0.0",
   "pytest-cov[all]"
 ]
