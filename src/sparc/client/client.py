@@ -57,8 +57,7 @@ class SparcClient(object):
             logging.debug(str(config))
         current_config = config["global"]["default_profile"]
 
-        # logging.debug(str(current_config))
-        logging.debug("Using the following config")
+        logging.debug("Using the following config:")
         logging.debug(str(config[current_config]))
 
         # iterate through the modules in the current package
@@ -86,7 +85,7 @@ class SparcClient(object):
         try:
             module = import_module(path)
         except ImportError:
-            print(sys.exc_info())
+            logging.debug("Skipping module. Failed to import from %s", f"{path=}", exc_info=True)
         else:
             for attribute_name in dir(module):
                 attribute = getattr(module, attribute_name)

@@ -65,10 +65,10 @@ class PennsieveService(ServiceBase):
         self.Pennsieve = Pennsieve(connect=False)
         if config is not None:
             self.profile_name = config.get("pennsieve_profile_name")
+            logging.info("Profile: " + self.profile_name)
         else:
             self.profile_name = None
-
-        logging.info("Profile: " + self.profile_name)
+            logging.info("Profile: none")
         if connect:
             self.connect()  # profile_name=self.profile_name)
 

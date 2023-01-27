@@ -1,6 +1,6 @@
 from .client import SparcClient
 
-__all__ = [
+__all__  : tuple[str, ...] = [
     "SparcClient",
 ]
 
