@@ -13,7 +13,7 @@ maintainers = [
   {name = "Patryk Orzechowski", email = "patryk@upenn.edu"}
 ]
 classifiers=[
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "Intended Audience :: Science/Research",
