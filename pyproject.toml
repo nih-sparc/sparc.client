@@ -1,6 +1,6 @@
 [project]
 name = "sparc.client"
-version = "0.0.1"
+version = "0.0.1.post1"
 description = "NIH SPARC Python Client"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,7 +13,7 @@ maintainers = [
   {name = "Patryk Orzechowski", email = "patryk@upenn.edu"}
 ]
 classifiers=[
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "Intended Audience :: Science/Research",

@@ -1,6 +1,12 @@
 # sparc.client
 
 NIH SPARC Python Client
+=======================
+[![PyPI Latest Release](https://img.shields.io/pypi/v/sparc.client.svg)](https://pypi.org/project/sparc.client/)
+[![pypi](https://img.shields.io/pypi/pyversions/sparc.client.svg)](https://pypi.org/project/sparc.client/)
+[![Package Status](https://img.shields.io/pypi/status/sparc.client.svg)](https://pypi.org/project/sparc.client/)
+[![License](https://img.shields.io/pypi/l/sparc.client.svg)](https://github.com/nih-sparc/sparc.client/blob/main/LICENSE)
+[![Coverage](https://codecov.io/github/nih-sparc/sparc.client/coverage.svg?branch=main)](https://codecov.io/gh/nih-sparc/sparc.client)
 
 # Architecture details
 

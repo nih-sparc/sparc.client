@@ -77,7 +77,7 @@ class PennsieveService(ServiceBase):
         logging.info("Connecting to Pennsieve...")
 
         if self.profile_name is not None:
-            self.Pennsieve.connect(profile_name=self.profile_name, timeout=5)
+            self.Pennsieve.connect(profile_name=self.profile_name)
         else:
             self.Pennsieve.connect()
         return self.Pennsieve
@@ -239,7 +239,7 @@ class PennsieveService(ServiceBase):
             offset=offset,
             file_type=file_type,
             query=query,
-            organiation=organization,
+            organization=organization,
             organization_id=organization_id,
             dataset_id=dataset_id,
         )
@@ -296,7 +296,6 @@ class PennsieveService(ServiceBase):
         file_list = [file_list] if type(file_list) is dict else file_list
 
         # create a tuple with datasetId and version of the dataset
-
         properties = set([(x["datasetId"], x["datasetVersion"]) for x in file_list])
 
         # extract all the files
@@ -324,7 +323,7 @@ class PennsieveService(ServiceBase):
         # replace extension of the file with '.gz' if downloading more than 1 file
         if output_name is None:
             output_name = (
-                file_list[0] if len(paths) == 1 else os.path.splitext(file_list[0]) + ".gz"
+                file_list[0]["name"] if len(paths) == 1 else os.path.splitext(file_list[0]) + ".gz"
             )
         with open(output_name, mode="wb+") as f:
             f.write(response.content)

@@ -1,0 +1,10 @@
+v0.0.1
+------
+Alpha release of Python Sparc Client.
+Basic functionalities:
+- automatic/manual module loading
+- ServiceBase class for adding new modules
+- Pennsieve module with basic functionalities: 
+   - listing datasets, files, records
+   - downloading files
+   - Basic API support (GET/POST) 
