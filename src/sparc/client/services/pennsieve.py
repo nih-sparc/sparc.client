@@ -321,8 +321,6 @@ class PennsieveService(ServiceBase):
         response = requests.post(url, json=json, headers=headers)
 
         # replace extension of the file with '.gz' if downloading more than 1 file
-#        print(file_list[0])
-#        print(os.path.splitext(file_list[0]))
         if output_name is None:
             output_name = (
                 file_list[0]['name'] if len(paths) == 1 else os.path.splitext(file_list[0]) + ".gz"
