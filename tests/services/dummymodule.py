@@ -6,9 +6,12 @@ class DummyService(ServiceBase):
     """A dummy class to check module import """
 
     def __init__(self, config=None, connect=False, *args, **kwargs) -> None:
-        pass
+        self.config = config
+        self.connect = connect
+        self.connect_method_called = False
 
     def connect(self, *args, **kwargs) -> Optional:
+        self.connect_method_called = True
         return True
 
     def info(self, *args, **kwargs) -> str:

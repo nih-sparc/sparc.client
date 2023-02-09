@@ -43,7 +43,6 @@ class SparcClient(object):
         Connects all the modules by calling their connect() functions.
     """
 
-    module_names = []
 
     def __init__(self, config_file="config/config.ini", connect=True) -> None:
         # Read config file
@@ -59,7 +58,7 @@ class SparcClient(object):
 
         logging.debug("Using the following config:")
         logging.debug(str(config[current_config]))
-
+        self.module_names = []
         # iterate through the modules in the current package
 #        if package_dir is None: 
         package_dir = os.path.join(Path(__file__).resolve().parent, "services")
@@ -78,7 +77,7 @@ class SparcClient(object):
 
         Parameters
         ----------
-        path : str
+        paths : str
             a path to the module
         config : dict or configparser.SectionProxy
             a dictionary (or Section of the config file parsed by ConfigParser) with the configuration variables

@@ -27,15 +27,14 @@ classifiers=[
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-  "pennsieve2",
+  "pennsieve2 >= 0.1.1",
 ]
 
 
 [project.optional-dependencies]
 test = [
-  "pennsieve2 >=1.1.0",
-  "pytest < 5.0.0",
-  "pytest-cov[all]"
+  "pytest ~= 7.2",
+  "pytest-cov"
 ]
 
 
