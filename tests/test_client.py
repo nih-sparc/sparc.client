@@ -1,5 +1,4 @@
 import os.path
-from pathlib import Path
 
 import pytest
 
@@ -8,7 +7,7 @@ from sparc.client import SparcClient
 
 def test_class(config_file):
     c = SparcClient(connect=False, config_file=config_file)
-    assert len(c.module_names) == 1
+    assert len(c.module_names) > 0
 
 
 # Config file tests
@@ -31,9 +30,40 @@ def test_failed_add_module(config_file):
 
 
 def test_add_module_connect(config_file):
-    from tests.services.dummymodule import DummyService
-    d = DummyService()
-    print(d.get_profile())
     sc = SparcClient(config_file=config_file, connect=False)
-    sc.add_module('tests.services.dummymodule', connect=True)
 
+    expected_module_config = {'module_param': 'value'}
+    sc.add_module('tests.mock_service', config=expected_module_config, connect=True)
+
+    assert 'mock_service' in sc.module_names
+    assert hasattr(sc, 'mock_service')
+
+    d = sc.mock_service
+    from tests.mock_service import MockService
+    assert isinstance(d, MockService)
+    assert d.init_connect_arg is True
+    assert d.init_config_arg == expected_module_config
+    assert d.connect_method_called is True
+
+
+def test_add_pennsieve(config_file):
+    sc = SparcClient(config_file=config_file, connect=False)
+    assert 'pennsieve' in sc.module_names
+    assert hasattr(sc, "pennsieve")
+    from sparc.client.services.pennsieve import PennsieveService
+    assert isinstance(sc.pennsieve, PennsieveService)
+
+
+def test_connect(config_file, monkeypatch):
+    sc = SparcClient(config_file=config_file, connect=False)
+    mock_connect_results = []
+
+    def make_mock_connect(service_name):
+        return lambda: mock_connect_results.append(service_name)
+
+    for name in sc.module_names:
+        service = getattr(sc, name)
+        monkeypatch.setattr(service, 'connect', make_mock_connect(name))
+
+    sc.connect()
+    assert mock_connect_results == sc.module_names

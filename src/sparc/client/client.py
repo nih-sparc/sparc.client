@@ -112,6 +112,7 @@ class SparcClient(object):
     def connect(self) -> bool:
         """Connects each of the modules loaded into self.module_names"""
         for module_name in self.module_names:
-            if hasattr(module_name, 'connect'):
+            module = getattr(self, module_name)
+            if hasattr(module, 'connect'):
                 getattr(self, module_name).connect()
         return True
