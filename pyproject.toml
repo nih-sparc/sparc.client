@@ -34,7 +34,8 @@ dependencies = [
 [project.optional-dependencies]
 test = [
   "pytest ~= 7.2",
-  "pytest-cov"
+  "pytest-cov",
+  "flake8"
 ]
 
 
