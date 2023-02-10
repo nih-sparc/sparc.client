@@ -68,4 +68,6 @@ a.connect()  #connect to all services
 
 Run `pip install -e '.[test]'` to install the dependencies needed for a development environment.
 
-Run `pytest --cov` to run the tests and get a test coverage summary.
+Run `pytest --cov=./src` to run the tests and get a test coverage summary.
+
+Run `pytest --cov-report html --cov=./src` to run the tests and get a full HTML coverage report output to `htmlcov`.
