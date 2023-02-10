@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from configparser import ConfigParser
 from importlib import import_module
 from inspect import isabstract, isclass
@@ -43,7 +42,6 @@ class SparcClient(object):
         Connects all the modules by calling their connect() functions.
     """
 
-
     def __init__(self, config_file="config/config.ini", connect=True) -> None:
         # Read config file
         if not config_file:
@@ -60,7 +58,7 @@ class SparcClient(object):
         logging.debug(str(config[current_config]))
         self.module_names = []
         # iterate through the modules in the current package
-#        if package_dir is None: 
+        # if package_dir is None:
         package_dir = os.path.join(Path(__file__).resolve().parent, "services")
 
         for _, module_name, _ in iter_modules([package_dir]):
@@ -68,9 +66,9 @@ class SparcClient(object):
             self.add_module(
                 f"{__package__}.services.{module_name}", config[current_config], connect
             )
-#        else:
-#            self.add_module(package_dir, config[current_config], connect)
 
+    #        else:
+    #            self.add_module(package_dir, config[current_config], connect)
 
     def add_module(self, paths, config=None, connect=True):
         """Adds and optionally connects to a module in a given path with configuration variables defined in config.
@@ -88,7 +86,7 @@ class SparcClient(object):
             paths = [paths]
 
         for path in paths:
-            module_name = path.split(".")[-1] if '.' in path else path
+            module_name = path.split(".")[-1] if "." in path else path
             try:
                 module = import_module(path)
                 for attribute_name in dir(module):
@@ -106,13 +104,15 @@ class SparcClient(object):
                             c.connect()
 
             except ModuleNotFoundError:
-                logging.debug("Skipping module. Failed to import from %s", f"{path=}", exc_info=True)
+                logging.debug(
+                    "Skipping module. Failed to import from %s", f"{path=}", exc_info=True
+                )
                 raise
 
     def connect(self) -> bool:
         """Connects each of the modules loaded into self.module_names"""
         for module_name in self.module_names:
             module = getattr(self, module_name)
-            if hasattr(module, 'connect'):
+            if hasattr(module, "connect"):
                 getattr(self, module_name).connect()
         return True

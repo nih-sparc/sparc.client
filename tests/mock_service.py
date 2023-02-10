@@ -3,7 +3,7 @@ from sparc.client.services._default import ServiceBase
 
 
 class MockService(ServiceBase):
-    """A mock class to check module import """
+    """A mock class to check module import"""
 
     def __init__(self, config=None, connect=False, *args, **kwargs) -> None:
         self.init_config_arg = config

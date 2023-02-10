@@ -18,7 +18,7 @@ def test_config_non_existing(config_file=None):
 
 # Test config file with incorrect section pointer
 def test_config_no_section(test_resources_dir):
-    config_file = os.path.join(test_resources_dir, 'dummy_config.ini')
+    config_file = os.path.join(test_resources_dir, "dummy_config.ini")
     with pytest.raises(KeyError):
         a = SparcClient(config_file, connect=False)
 
@@ -26,20 +26,21 @@ def test_config_no_section(test_resources_dir):
 def test_failed_add_module(config_file):
     client = SparcClient(connect=False, config_file=config_file)
     with pytest.raises(ModuleNotFoundError):
-        client.add_module(paths='sparc.client.xyz', connect=False)
+        client.add_module(paths="sparc.client.xyz", connect=False)
 
 
 def test_add_module_connect(config_file):
     sc = SparcClient(config_file=config_file, connect=False)
 
-    expected_module_config = {'module_param': 'value'}
-    sc.add_module('tests.mock_service', config=expected_module_config, connect=True)
+    expected_module_config = {"module_param": "value"}
+    sc.add_module("tests.mock_service", config=expected_module_config, connect=True)
 
-    assert 'mock_service' in sc.module_names
-    assert hasattr(sc, 'mock_service')
+    assert "mock_service" in sc.module_names
+    assert hasattr(sc, "mock_service")
 
     d = sc.mock_service
     from tests.mock_service import MockService
+
     assert isinstance(d, MockService)
     assert d.init_connect_arg is True
     assert d.init_config_arg == expected_module_config
@@ -48,9 +49,10 @@ def test_add_module_connect(config_file):
 
 def test_add_pennsieve(config_file):
     sc = SparcClient(config_file=config_file, connect=False)
-    assert 'pennsieve' in sc.module_names
+    assert "pennsieve" in sc.module_names
     assert hasattr(sc, "pennsieve")
     from sparc.client.services.pennsieve import PennsieveService
+
     assert isinstance(sc.pennsieve, PennsieveService)
 
 
@@ -63,7 +65,7 @@ def test_connect(config_file, monkeypatch):
 
     for name in sc.module_names:
         service = getattr(sc, name)
-        monkeypatch.setattr(service, 'connect', make_mock_connect(name))
+        monkeypatch.setattr(service, "connect", make_mock_connect(name))
 
     sc.connect()
     assert mock_connect_results == sc.module_names
