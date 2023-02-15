@@ -63,3 +63,11 @@ a.connect()  #connect to all services
 2. Create a file in services/
 3. Create a class within this file that extends BaseService
 4. The class needs to define all the functions required + may add its own.
+
+# Developer Setup
+
+Run `pip install -e '.[test]'` to install the dependencies needed for a development environment.
+
+Run `pytest --cov=./src` to run the tests and get a test coverage summary.
+
+Run `pytest --cov-report html --cov=./src` to run the tests and get a full HTML coverage report output to `htmlcov`.

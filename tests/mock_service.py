@@ -2,13 +2,16 @@ from typing import Optional
 from sparc.client.services._default import ServiceBase
 
 
-class DummyService(ServiceBase):
-    """A dummy class to check module import """
+class MockService(ServiceBase):
+    """A mock class to check module import"""
 
     def __init__(self, config=None, connect=False, *args, **kwargs) -> None:
-        pass
+        self.init_config_arg = config
+        self.init_connect_arg = connect
+        self.connect_method_called = False
 
     def connect(self, *args, **kwargs) -> Optional:
+        self.connect_method_called = True
         return True
 
     def info(self, *args, **kwargs) -> str:
