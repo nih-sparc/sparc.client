@@ -1,6 +1,6 @@
 [project]
 name = "sparc.client"
-version = "0.0.1.post1"
+version = "0.0.2"
 description = "NIH SPARC Python Client"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,7 +27,7 @@ classifiers=[
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-  "pennsieve2 >= 0.1.1",
+  "pennsieve2 >= 0.1.2",
 ]
 
 
