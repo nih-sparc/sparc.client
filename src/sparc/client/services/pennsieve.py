@@ -44,7 +44,7 @@ class PennsieveService(ServiceBase):
     list_files(...) : dict
         Returns a dictionary with datasets matching search criteria.
     list_filenames(...) : list
-        Returns a dictionary with filenames matching search criteria.
+        Returns a dictionary with filenames stored at AWS matching search criteria.
     list_records(...) : dict
         Returns a dictionary with records matching search criteria.
 
@@ -57,6 +57,7 @@ class PennsieveService(ServiceBase):
 
     host_api = "https://api.pennsieve.io"
     Pennsieve = None
+    profile_name = None
 
     def __init__(self, config=None, connect=False) -> None:
         logging.info("Initializing Pennsieve...")
@@ -67,7 +68,6 @@ class PennsieveService(ServiceBase):
             self.profile_name = config.get("pennsieve_profile_name")
             logging.info("Profile: " + self.profile_name)
         else:
-            self.profile_name = None
             logging.info("Profile: none")
         if connect:
             self.connect()  # profile_name=self.profile_name)
@@ -89,11 +89,11 @@ class PennsieveService(ServiceBase):
     def get_profile(self) -> str:
         """Returns currently used profile.
 
-        Returns
-        -------
+        Returns:
+        --------
         A string with username.
         """
-        return self.Pennsieve.user.whoami()
+        return self.Pennsieve.get_user()
 
     def set_profile(self, profile_name) -> str:
         """Changes the profile to the specified name.
@@ -102,15 +102,15 @@ class PennsieveService(ServiceBase):
         profile_name : str
             The name of the profile to change into.
 
-        Returns
-        -------
+        Returns:
+        --------
         A string with confirmation of profile switch.
         """
-        return self.Pennsieve.user.switch(profile_name)
+        return self.Pennsieve.switch(profile_name)
 
     def close(self) -> None:
         """Closes the Pennsieve Agent."""
-        return self.Pennsieve.close()
+        return self.Pennsieve.stop()
 
     def list_datasets(
         self,
@@ -203,6 +203,10 @@ class PennsieveService(ServiceBase):
             publishing organization id
         dataset_id : int
             files within this dataset
+
+        Returns:
+        --------
+        List of files stored at AWS with their parameters.
         """
 
         return self.Pennsieve.get(
@@ -287,7 +291,7 @@ class PennsieveService(ServiceBase):
         output_name : str
             The name of the output file (used if the archive
 
-        Return:
+        Returns:
         -------
         A response from the server.
         """
@@ -340,7 +344,7 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             a dictionary storing additional information
 
-        Return:
+        Returns:
         --------
         String in JSON format with response from the server.
 
@@ -384,7 +388,7 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             additional information
 
-        Return:
+        Returns:
         --------
         String in JSON format with response from the server.
         """
@@ -400,7 +404,7 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             additional information
 
-        Return:
+        Returns:
         -------
         String in JSON format with response from the server.
         """
