@@ -36,7 +36,8 @@ test = [
   "pytest ~= 7.2",
   "pytest-cov",
   "flake8",
-  "black"
+  "black",
+  "responses"
 ]
 
 

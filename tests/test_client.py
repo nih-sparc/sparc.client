@@ -1,7 +1,9 @@
 import os.path
 
 import pytest
+
 from sparc.client import SparcClient
+
 
 def test_class(config_file):
     c = SparcClient(connect=False, config_file=config_file)

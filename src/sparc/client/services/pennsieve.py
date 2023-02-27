@@ -1,7 +1,7 @@
 import logging
 import os
-import requests
 
+import requests
 from pennsieve2 import Pennsieve
 
 from ._default import ServiceBase
