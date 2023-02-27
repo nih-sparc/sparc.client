@@ -50,12 +50,21 @@ For example, pennsieve.py file
 from sparc.client import SparcClient
 a = SparcClient(connect=False, config_file='config.ini')
 module = a.pennsieve.connect()
-module.user.whoami() #execute internal functions of the module
+module.info() #execute internal functions of the module
 
 # alternatively connect all the services available
 a.connect()  #connect to all services
 
 ```
+
+## Test generation - PyTest
+
+Some good resource for implementing tests could be found at [Medium](https://medium.com/analytics-vidhya/pytest-mocking-cheatsheet-dcebd84876e3).
+
+## Documentation - Sphinx tutorial
+
+A fresh start for creating documentation with Sphinx could be found at [towardsdatascience](https://towardsdatascience.com/documenting-python-code-with-sphinx-554e1d6c4f6d)
+
 
 # Contribution Guide
 
