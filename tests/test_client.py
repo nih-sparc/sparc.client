@@ -33,13 +33,13 @@ def test_add_module_connect(config_file):
     sc = SparcClient(config_file=config_file, connect=False)
 
     expected_module_config = {"module_param": "value"}
-    sc.add_module("tests.mock_service", config=expected_module_config, connect=True)
+    sc.add_module("mock_service", config=expected_module_config, connect=True)
 
     assert "mock_service" in sc.module_names
     assert hasattr(sc, "mock_service")
 
     d = sc.mock_service
-    from tests.mock_service import MockService
+    from mock_service import MockService
 
     assert isinstance(d, MockService)
     assert d.init_connect_arg is True

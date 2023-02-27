@@ -35,8 +35,10 @@ dependencies = [
 test = [
   "pytest ~= 7.2",
   "pytest-cov",
+  "pytest-mock",
   "flake8",
-  "black"
+  "black",
+  "responses"
 ]
 
 
