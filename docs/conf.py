@@ -6,7 +6,12 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../src'))
+_HERE = os.path.dirname(__file__)
+sys.path.insert(0, os.path.abspath(_HERE, '../src'))
+sys.path.insert(0, os.path.abspath(_HERE, '../src/sparc/client'))
+sys.path.insert(0, os.path.abspath(_HERE, '../src/sparc/client/services'))
+
+import sparc.client
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
