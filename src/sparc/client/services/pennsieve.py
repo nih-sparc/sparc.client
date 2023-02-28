@@ -10,15 +10,15 @@ from ._default import ServiceBase
 class PennsieveService(ServiceBase):
     """A wrapper for Pennsieve2 library
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     config : dict
         A configuration with defined profile name (pennsieve_profile_name).
     connect : bool
         Determines if Sparc Client should initiate connection with Pennsieve Agent.
 
-    Attributes
-    ----------
+    Attributes:
+    -----------
     default_headers : dict
         A dictionary with headers to make HTTP requests.
     host_api : str
@@ -27,8 +27,8 @@ class PennsieveService(ServiceBase):
         A class holding st
 
 
-    Methods
-    -------
+    Methods:
+    --------
     connect()
         Establishes connection with Pennsieve Agent.
     info() -> str
@@ -97,8 +97,9 @@ class PennsieveService(ServiceBase):
 
     def set_profile(self, profile_name) -> str:
         """Changes the profile to the specified name.
-        Parameters
-        ----------
+
+        Parameters:
+        -----------
         profile_name : str
             The name of the profile to change into.
 
@@ -126,8 +127,8 @@ class PennsieveService(ServiceBase):
     ) -> list:
         """Gets datasets matching specified criteria.
 
-        Parameters
-        ----------
+        Parameters:
+        -----------
         limit : int
             max number of datasets returned
         offset : int
@@ -185,8 +186,8 @@ class PennsieveService(ServiceBase):
         dataset_id=None,
     ) -> list:
         """
-        Parameters
-        ----------
+        Parameters:
+        -----------
         limit : int
             max number of datasets returned
         offset : int
@@ -254,8 +255,8 @@ class PennsieveService(ServiceBase):
         self, limit=10, offset=0, model=None, organization=None, dataset_id=None
     ) -> list:
         """
-        Parameters
-        ----------
+        Parameters:
+        -----------
         limit : int
             max number of datasets returned
         offset : int
@@ -292,7 +293,7 @@ class PennsieveService(ServiceBase):
             The name of the output file (used if the archive
 
         Returns:
-        -------
+        --------
         A response from the server.
         """
 
@@ -369,8 +370,8 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             additional information
 
-        Return:
-        -------
+        Returns:
+        --------
         String in JSON format with response from the server.
         """
         return self.Pennsieve.post(url, json=json, **kwargs)
@@ -405,7 +406,7 @@ class PennsieveService(ServiceBase):
             additional information
 
         Returns:
-        -------
+        --------
         String in JSON format with response from the server.
         """
         return self.Pennsieve.delete(url, **kwargs)

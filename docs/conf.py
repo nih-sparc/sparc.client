@@ -23,7 +23,10 @@ extensions = [
     'sphinx.ext.autodoc', # Core library for html generation from docstrings
     'sphinx.ext.viewcode', # Add links to highlighted source code
     'sphinx.ext.napoleon', # Support for NumPy and Google style docstrings
+    'sphinx.ext.doctest', # Test snippets in the documentation¶
+    'sphinx.ext.coverage', # Collect doc coverage stats
     'sphinx.ext.autosummary',  # Create neat summary tables
+    'sphinx.ext.githubpages', # Creates .nojekyll
 ]
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
