@@ -63,7 +63,7 @@ Some good resource for implementing tests could be found at [Medium](https://med
 
 ## Documentation - Sphinx tutorial
 
-A fresh start for creating documentation with Sphinx could be found at [towardsdatascience](https://towardsdatascience.com/documenting-python-code-with-sphinx-554e1d6c4f6d)
+A fresh start for creating documentation with Sphinx could be found at [towardsdatascience](https://towardsdatascience.com/documenting-python-code-with-sphinx-554e1d6c4f6d).
 
 
 # Contribution Guide
