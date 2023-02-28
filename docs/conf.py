@@ -7,9 +7,9 @@
 import os
 import sys
 _HERE = os.path.dirname(__file__)
-sys.path.insert(0, os.path.abspath(_HERE, '../src'))
-sys.path.insert(0, os.path.abspath(_HERE, '../src/sparc/client'))
-sys.path.insert(0, os.path.abspath(_HERE, '../src/sparc/client/services'))
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src/sparc/client')))
+sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src/sparc/client/services')))
 
 import sparc.client
 
