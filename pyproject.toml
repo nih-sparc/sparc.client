@@ -38,7 +38,9 @@ test = [
   "pytest-mock",
   "flake8",
   "black",
-  "responses"
+  "responses",
+  "sphinx >6',
+  "sphinx-rtd-theme",
 ]
 
 
