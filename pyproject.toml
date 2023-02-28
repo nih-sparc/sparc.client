@@ -39,7 +39,7 @@ test = [
   "flake8",
   "black",
   "responses",
-  "sphinx > 6",
+  "sphinx",
   "sphinx-rtd-theme",
 ]
 
