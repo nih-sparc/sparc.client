@@ -6,7 +6,7 @@
 Welcome to sparc.client's documentation!
 ========================================
 
-A great starting point for using our package could be found in our `tutorial <https://github.com/nih-sparc/sparc.client/blob/main/docs/tutorial.ipynb>`_ .
+A great starting point for using our package could be found in our tutorial.
 
 
 .. toctree::
