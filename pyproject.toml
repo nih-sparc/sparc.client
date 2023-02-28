@@ -38,7 +38,7 @@ test = [
   "pytest-mock",
   "flake8",
   "black",
-  "responses"
+  "responses",
 ]
 
 

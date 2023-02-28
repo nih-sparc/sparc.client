@@ -5,8 +5,8 @@ from typing import Optional
 class ServiceBase(ABC):
     """An abstract class determining functions of Sparc Client modules
 
-    Attributes
-    ----------
+    Attributes:
+    -----------
     config : dict
         Dictionary of config variables for the module implementic ServiceBase.
     connect : bool
@@ -16,8 +16,8 @@ class ServiceBase(ABC):
     kwargs : dict
         All other keyword arguments.
 
-    Methods
-    -------
+    Methods:
+    --------
     connect(*args, **kwargs) -> Optional
         Connects a given module to Sparc Client.
     info(*args, **kwargs) -> str

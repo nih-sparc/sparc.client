@@ -16,8 +16,8 @@ class SparcClient(object):
     This class is used to connect existing modules located in <projectbase>/services folder
 
 
-    Attributes
-    ----------
+    Parameters:
+    -----------
     config_file : str
         The location of the file in INI format that is used to extract configuration variables.
         The config file needs to define a [global] section with the name of the default profile
@@ -29,13 +29,13 @@ class SparcClient(object):
         unless connect is set to False.
 
 
-    Attributes
-    ----------
+    Attributes:
+    -----------
     module_names : list
         Stores the list of modules that are automatically loaded from the <projectbase>/services directory.
 
-    Methods
-    -------
+    Methods:
+    --------
     add_module(path, config, connect):
         Adds and optionally connects to a module in a given path with configuration variables defined in config.
     connect()
@@ -73,8 +73,8 @@ class SparcClient(object):
     def add_module(self, paths, config=None, connect=True):
         """Adds and optionally connects to a module in a given path with configuration variables defined in config.
 
-        Parameters
-        ----------
+        Parameters:
+        -----------
         paths : str
             a path to the module
         config : dict or configparser.SectionProxy
