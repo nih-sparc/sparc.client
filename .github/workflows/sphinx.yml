@@ -17,14 +17,11 @@ jobs:
         pip install -e . 
         pip install sphinx sphinx_rtd_theme
         sphinx-build docs docs/_build/html/
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
       with:
-        name: html-docs
-        path: docs/_build/html/
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/_build/html
+        # Upload built website
+        path: 'docs/_build/html'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
