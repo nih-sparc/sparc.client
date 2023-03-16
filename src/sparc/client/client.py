@@ -1,10 +1,11 @@
 import logging
 import os
-from configparser import ConfigParser
+from configparser import ConfigParser, SectionProxy
 from importlib import import_module
 from inspect import isabstract, isclass
 from pathlib import Path
 from pkgutil import iter_modules
+from typing import Optional, Union
 
 from .services import ServiceBase
 
@@ -42,7 +43,9 @@ class SparcClient(object):
         Connects all the modules by calling their connect() functions.
     """
 
-    def __init__(self, config_file="config/config.ini", connect=True) -> None:
+    def __init__(self,
+                config_file: str="config/config.ini",
+                connect: bool=True) -> None:
         # Read config file
         if not config_file:
             raise RuntimeError("Configuration file not given")
@@ -57,8 +60,8 @@ class SparcClient(object):
         logging.debug("Using the following config:")
         logging.debug(str(config[current_config]))
         self.module_names = []
+
         # iterate through the modules in the current package
-        # if package_dir is None:
         package_dir = os.path.join(Path(__file__).resolve().parent, "services")
 
         for _, module_name, _ in iter_modules([package_dir]):
@@ -67,15 +70,17 @@ class SparcClient(object):
                 f"{__package__}.services.{module_name}", config[current_config], connect
             )
 
-    #        else:
-    #            self.add_module(package_dir, config[current_config], connect)
 
-    def add_module(self, paths, config=None, connect=True):
+    def add_module(self,
+                   paths: Union[str, list[str]],
+                   config: Optional[Union[dict, SectionProxy]]=None,
+                   connect: bool=True,
+                  ) -> None:
         """Adds and optionally connects to a module in a given path with configuration variables defined in config.
 
         Parameters:
         -----------
-        paths : str
+        paths : str or list[str]
             a path to the module
         config : dict or configparser.SectionProxy
             a dictionary (or Section of the config file parsed by ConfigParser) with the configuration variables

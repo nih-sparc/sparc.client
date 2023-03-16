@@ -31,7 +31,6 @@ def test_register_responses():
         method=responses.PUT,
         url="http://api.pennsieve.io/whatever",
         content_type="application/json",
-        # json={"Error": "Invalid dataset"},
         json={"key3": "value3"},
         status=200,
     )

@@ -1,6 +1,6 @@
 [project]
 name = "sparc.client"
-version = "0.0.2"
+version = "0.1.0"
 description = "NIH SPARC Python Client"
 readme = "README.md"
 requires-python = ">=3.10"

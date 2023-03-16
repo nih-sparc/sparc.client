@@ -1,5 +1,4 @@
 import json
-
 from pennsieve2 import Pennsieve
 
 from sparc.client.services.pennsieve import PennsieveService
@@ -165,7 +164,6 @@ def test_list_files(mocker, mock_pennsieve):
 
     mocker.patch("pennsieve2.Pennsieve.get", mock_pennsieve.list_files)
     p = PennsieveService(connect=False)
-    print(p.list_files())
     actual = p.list_files()
     assert expected == actual
 
@@ -204,7 +202,6 @@ def test_list_records(mocker, mock_pennsieve):
     mocker.patch("pennsieve2.Pennsieve.get", mock_pennsieve.list_records)
     p = PennsieveService(connect=False)
     actual = p.list_records()
-    print(actual)
     assert expected == actual
 
 
