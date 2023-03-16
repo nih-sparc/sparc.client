@@ -8,8 +8,6 @@ import os
 import sys
 _HERE = os.path.dirname(__file__)
 sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src')))
-sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src/sparc/client')))
-sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src/sparc/client/services')))
 
 import sparc.client
 
@@ -32,6 +30,7 @@ extensions = [
     'sphinx.ext.coverage', # Collect doc coverage stats
     'sphinx.ext.autosummary',  # Create neat summary tables
     'sphinx.ext.githubpages', # Creates .nojekyll
+    'sphinx.ext.viewcode', # Add links to highlighted source code
 ]
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
@@ -39,9 +38,9 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+html_theme_options = {'navigation_depth': 2}

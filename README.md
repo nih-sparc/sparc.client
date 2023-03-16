@@ -64,7 +64,14 @@ Some good resource for implementing tests could be found at [Medium](https://med
 ## Documentation - Sphinx tutorial
 
 A fresh start for creating documentation with Sphinx could be found at [towardsdatascience](https://towardsdatascience.com/documenting-python-code-with-sphinx-554e1d6c4f6d).
+To reproduce steps:
 
+1. Create a docs folder
+2. Run `sphinx-quickstart` in docs folder, fill the required prompts.
+3. Edit `conf.py` and `index.rst` files to adjust them to your needs
+4. Run in docs folder sphinx-apidoc -o . ../src
+5. Disregard `modules.rst` and `sphinx.rst`, attach `sphinx.client` to toctree in `index.rst`
+6. Run `make html` in docs folder.
 
 # Contribution Guide
 
