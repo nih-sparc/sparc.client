@@ -5,7 +5,7 @@ Submodules
 ----------
 
 sparc.client.services.pennsieve module
---------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: sparc.client.services.pennsieve
    :members:
@@ -13,7 +13,7 @@ sparc.client.services.pennsieve module
    :show-inheritance:
 
 Module contents
----------------
+~~~~~~~~~~~~~~~
 
 .. automodule:: sparc.client.services
    :members:

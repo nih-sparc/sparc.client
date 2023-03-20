@@ -13,7 +13,7 @@ Submodules
 ----------
 
 sparc.client.client module
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: sparc.client.client
    :members:
@@ -21,7 +21,7 @@ sparc.client.client module
    :show-inheritance:
 
 Module contents
----------------
+~~~~~~~~~~~~~~~
 
 .. automodule:: sparc.client
    :members:
