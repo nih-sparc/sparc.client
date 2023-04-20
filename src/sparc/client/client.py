@@ -43,9 +43,7 @@ class SparcClient(object):
         Connects all the modules by calling their connect() functions.
     """
 
-    def __init__(self,
-                config_file: str="config/config.ini",
-                connect: bool=True) -> None:
+    def __init__(self, config_file: str = "config/config.ini", connect: bool = True) -> None:
         # Read config file
         if not config_file:
             raise RuntimeError("Configuration file not given")
@@ -70,12 +68,12 @@ class SparcClient(object):
                 f"{__package__}.services.{module_name}", config[current_config], connect
             )
 
-
-    def add_module(self,
-                   paths: Union[str, list[str]],
-                   config: Optional[Union[dict, SectionProxy]]=None,
-                   connect: bool=True,
-                  ) -> None:
+    def add_module(
+        self,
+        paths: Union[str, list[str]],
+        config: Optional[Union[dict, SectionProxy]] = None,
+        connect: bool = True,
+    ) -> None:
         """Adds and optionally connects to a module in a given path with configuration variables defined in config.
 
         Parameters:
