@@ -1,3 +1,11 @@
+v0.0.2
+------
+Alpha2 release of Python Sparc Client.
+Major updates:
+- Code coverage at 100%
+- Sphinx documentation with Github Pages
+
+
 v0.0.1
 ------
 Alpha release of Python Sparc Client.

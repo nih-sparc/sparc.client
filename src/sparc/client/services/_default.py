@@ -5,8 +5,8 @@ from typing import Optional
 class ServiceBase(ABC):
     """An abstract class determining functions of Sparc Client modules
 
-    Attributes
-    ----------
+    Attributes:
+    -----------
     config : dict
         Dictionary of config variables for the module implementic ServiceBase.
     connect : bool
@@ -16,8 +16,8 @@ class ServiceBase(ABC):
     kwargs : dict
         All other keyword arguments.
 
-    Methods
-    -------
+    Methods:
+    --------
     connect(*args, **kwargs) -> Optional
         Connects a given module to Sparc Client.
     info(*args, **kwargs) -> str
@@ -32,24 +32,24 @@ class ServiceBase(ABC):
 
     @abstractmethod
     def __init__(self, config, connect: bool, *args, **kwargs) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def connect(self, *args, **kwargs) -> Optional:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def info(self, *args, **kwargs) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def get_profile(self, *args, **kwargs) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def set_profile(self, *args, **kwargs) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def close(self, *args, **kwargs) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover

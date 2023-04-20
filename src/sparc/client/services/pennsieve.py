@@ -1,24 +1,25 @@
 import logging
 import os
+
 import requests
-
 from pennsieve2 import Pennsieve
-
+from configparser import SectionProxy
+from typing import List, Optional, Union
 from ._default import ServiceBase
 
 
 class PennsieveService(ServiceBase):
     """A wrapper for Pennsieve2 library
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     config : dict
         A configuration with defined profile name (pennsieve_profile_name).
     connect : bool
         Determines if Sparc Client should initiate connection with Pennsieve Agent.
 
-    Attributes
-    ----------
+    Attributes:
+    -----------
     default_headers : dict
         A dictionary with headers to make HTTP requests.
     host_api : str
@@ -27,8 +28,8 @@ class PennsieveService(ServiceBase):
         A class holding st
 
 
-    Methods
-    -------
+    Methods:
+    --------
     connect()
         Establishes connection with Pennsieve Agent.
     info() -> str
@@ -44,7 +45,7 @@ class PennsieveService(ServiceBase):
     list_files(...) : dict
         Returns a dictionary with datasets matching search criteria.
     list_filenames(...) : list
-        Returns a dictionary with filenames matching search criteria.
+        Returns a dictionary with filenames stored at AWS matching search criteria.
     list_records(...) : dict
         Returns a dictionary with records matching search criteria.
 
@@ -56,9 +57,12 @@ class PennsieveService(ServiceBase):
     }
 
     host_api = "https://api.pennsieve.io"
-    Pennsieve = None
+    Pennsieve: Pennsieve = None
+    profile_name: str = None
 
-    def __init__(self, config=None, connect=False) -> None:
+    def __init__(
+        self, config: Optional[Union[dict, SectionProxy]] = None, connect: bool = False
+    ) -> None:
         logging.info("Initializing Pennsieve...")
         logging.debug(str(config))
 
@@ -67,12 +71,11 @@ class PennsieveService(ServiceBase):
             self.profile_name = config.get("pennsieve_profile_name")
             logging.info("Profile: " + self.profile_name)
         else:
-            self.profile_name = None
             logging.info("Profile: none")
         if connect:
             self.connect()  # profile_name=self.profile_name)
 
-    def connect(self):
+    def connect(self) -> Pennsieve:
         """Establishes connection with Pennsieve Agent."""
         logging.info("Connecting to Pennsieve...")
 
@@ -89,45 +92,46 @@ class PennsieveService(ServiceBase):
     def get_profile(self) -> str:
         """Returns currently used profile.
 
-        Returns
-        -------
+        Returns:
+        --------
         A string with username.
         """
-        return self.Pennsieve.user.whoami()
+        return self.Pennsieve.get_user()
 
-    def set_profile(self, profile_name) -> str:
+    def set_profile(self, profile_name: str) -> str:
         """Changes the profile to the specified name.
-        Parameters
-        ----------
+
+        Parameters:
+        -----------
         profile_name : str
             The name of the profile to change into.
 
-        Returns
-        -------
+        Returns:
+        --------
         A string with confirmation of profile switch.
         """
-        return self.Pennsieve.user.switch(profile_name)
+        return self.Pennsieve.switch(profile_name)
 
     def close(self) -> None:
         """Closes the Pennsieve Agent."""
-        return self.Pennsieve.close()
+        return self.Pennsieve.stop()
 
     def list_datasets(
         self,
-        limit=10,
-        offset=0,
-        query=None,
-        organization=None,
-        organization_id=None,
-        tags=None,
-        embargo=None,
-        order_by=None,
-        order_direction=None,
+        limit: int = 10,
+        offset: int = 0,
+        query: str = None,
+        organization: str = None,
+        organization_id: int = None,
+        tags: List[str] = None,
+        embargo: bool = None,
+        order_by: str = None,
+        order_direction: str = None,
     ) -> list:
         """Gets datasets matching specified criteria.
 
-        Parameters
-        ----------
+        Parameters:
+        -----------
         limit : int
             max number of datasets returned
         offset : int
@@ -176,17 +180,17 @@ class PennsieveService(ServiceBase):
 
     def list_files(
         self,
-        limit=10,
-        offset=0,
-        file_type=None,
-        query=None,
-        organization=None,
-        organization_id=None,
-        dataset_id=None,
+        limit: int = 10,
+        offset: int = 0,
+        file_type: str = None,
+        query: str = None,
+        organization: str = None,
+        organization_id: int = None,
+        dataset_id: int = None,
     ) -> list:
         """
-        Parameters
-        ----------
+        Parameters:
+        -----------
         limit : int
             max number of datasets returned
         offset : int
@@ -203,6 +207,10 @@ class PennsieveService(ServiceBase):
             publishing organization id
         dataset_id : int
             files within this dataset
+
+        Returns:
+        --------
+        List of files stored at AWS with their parameters.
         """
 
         return self.Pennsieve.get(
@@ -221,13 +229,13 @@ class PennsieveService(ServiceBase):
 
     def list_filenames(
         self,
-        limit=10,
-        offset=0,
-        file_type=None,
-        query=None,
-        organization=None,
-        organization_id=None,
-        dataset_id=None,
+        limit: int = 10,
+        offset: int = 0,
+        file_type: str = None,
+        query: str = None,
+        organization: str = None,
+        organization_id: int = None,
+        dataset_id: int = None,
     ) -> list:
         """Calls list_files() and extracts the names of the files.
         See also
@@ -247,11 +255,16 @@ class PennsieveService(ServiceBase):
         return list(map(lambda x: "/".join(x["uri"].split("/")[5:]), response))
 
     def list_records(
-        self, limit=10, offset=0, model=None, organization=None, dataset_id=None
+        self,
+        limit: int = 10,
+        offset: int = 0,
+        model: str = None,
+        organization: str = None,
+        dataset_id: int = None,
     ) -> list:
         """
-        Parameters
-        ----------
+        Parameters:
+        -----------
         limit : int
             max number of datasets returned
         offset : int
@@ -276,7 +289,7 @@ class PennsieveService(ServiceBase):
             },
         )
 
-    def download_file(self, file_list, output_name=None):
+    def download_file(self, file_list: dict, output_name: str = None):
         """Downloads files into a local storage.
 
         Parameters:
@@ -287,8 +300,8 @@ class PennsieveService(ServiceBase):
         output_name : str
             The name of the output file (used if the archive
 
-        Return:
-        -------
+        Returns:
+        --------
         A response from the server.
         """
 
@@ -329,7 +342,7 @@ class PennsieveService(ServiceBase):
             f.write(response.content)
         return response
 
-    def get(self, url, **kwargs):
+    def get(self, url: str, **kwargs):
         """Invokes GET endpoint on a server. Passing server name in url is optional.
 
         Parameters:
@@ -340,7 +353,7 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             a dictionary storing additional information
 
-        Return:
+        Returns:
         --------
         String in JSON format with response from the server.
 
@@ -352,7 +365,7 @@ class PennsieveService(ServiceBase):
         """
         return self.Pennsieve.get(url, **kwargs)
 
-    def post(self, url, json, **kwargs):
+    def post(self, url: str, json: dict, **kwargs):
         """Invokes POST endpoint on a server. Passing server name in url is optional.
 
         Parameters:
@@ -365,13 +378,13 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             additional information
 
-        Return:
-        -------
+        Returns:
+        --------
         String in JSON format with response from the server.
         """
         return self.Pennsieve.post(url, json=json, **kwargs)
 
-    def put(self, url, json, **kwargs):
+    def put(self, url: str, json: dict, **kwargs):
         """Invokes PUT endpoint on a server. Passing server name in url is optional.
 
         Parameters:
@@ -384,13 +397,13 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             additional information
 
-        Return:
+        Returns:
         --------
         String in JSON format with response from the server.
         """
         return self.Pennsieve.put(url, json=json, **kwargs)
 
-    def delete(self, url, **kwargs):
+    def delete(self, url: str, **kwargs):
         """Invokes DELETE endpoint on a server. Passing server name in url is optional.
 
         Parameters:
@@ -400,8 +413,8 @@ class PennsieveService(ServiceBase):
         kwargs : dict
             additional information
 
-        Return:
-        -------
+        Returns:
+        --------
         String in JSON format with response from the server.
         """
         return self.Pennsieve.delete(url, **kwargs)
