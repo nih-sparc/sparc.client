@@ -1,24 +1,57 @@
 import json
 import os
 
-from src.sparc.client.services.pennsieve import PennsieveService
+from cmlibs.zinc.context import Context
+from cmlibs.zinc.result import RESULT_OK
+from cmlibs.utils.zinc.field import get_group_list
 from scaffoldmaker import scaffolds
-from opencmiss.zinc.context import Context
-from mbfxml2ex.app import read_xml
-from mbfxml2ex.zinc import load
+from scaffoldmaker.annotation.bladder_terms import get_bladder_term
+from scaffoldmaker.annotation.body_terms import get_body_term
+from scaffoldmaker.annotation.brainstem_terms import get_brainstem_term
+from scaffoldmaker.annotation.colon_terms import get_colon_term
+from scaffoldmaker.annotation.esophagus_terms import get_esophagus_term
+from scaffoldmaker.annotation.heart_terms import get_heart_term
+from scaffoldmaker.annotation.lung_terms import get_lung_term
+from scaffoldmaker.annotation.muscle_terms import get_muscle_term
+from scaffoldmaker.annotation.nerve_terms import get_nerve_term
+from scaffoldmaker.annotation.smallintestine_terms import get_smallintestine_term
+from scaffoldmaker.annotation.stellate_terms import get_stellate_term
+from scaffoldmaker.annotation.stomach_terms import get_stomach_term
 from scaffoldmaker.utils.exportvtk import ExportVtk
-from opencmiss.zinc.result import RESULT_OK
+from src.sparc.client.services.pennsieve import PennsieveService
+from mbfxml2ex.app import read_xml
+from mbfxml2ex.zinc import load, write_ex
+
+
 
 class ZincHelper:
 
     def __init__(self):
+        self._allOrgan = {
+            "bladder": get_bladder_term,
+            "body": get_body_term,
+            "brainstem": get_brainstem_term,
+            "colon": get_colon_term,
+            "esophagus": get_esophagus_term,
+            "heart": get_heart_term,
+            "lung": get_lung_term,
+            "muscle": get_muscle_term,
+            "nerve": get_nerve_term,
+            "smallintestine": get_smallintestine_term,
+            "stellate": get_stellate_term,
+            "stomach": get_stomach_term,
+        }
+
         self._context = Context('sparcclient')
         self._region = self._context.getDefaultRegion()
         self._pennsieveService = PennsieveService(connect=False)
 
     def download_files(self, limit=10, offset=0, file_type=None, query=None, organization=None, organization_id=None, dataset_id=None):
         file_list = self._pennsieveService.list_files(limit, offset, file_type, query, organization, organization_id, dataset_id)
-        response = self._pennsieveService.download_file(file_list=file_list)
+        try:
+            response = self._pennsieveService.download_file(file_list=file_list)
+        except Exception:
+            raise RuntimeError("The dataset is not downloaded.")
         assert response.status_code == 200
         return file_list[0]['name']
 
@@ -42,6 +75,36 @@ class ZincHelper:
         ex = ExportVtk(self._region, 'MBF XML VTK export.')
         ex.writeFile(output)
 
-    def analyse(self, inputDataFileName):
-        result = self._region.readFile(inputDataFileName)
-        assert result == RESULT_OK, "Failed to load data file " + str(inputDataFileName)
+    def analyse(self, input_data_file_name, species=None, organ=None):
+        # Check if the input file is an XML file
+        if not input_data_file_name.endswith('.xml'):
+            raise ValueError("Input file must be a MBF XML file")
+
+        # Read the input data file and write the contents to an ex file
+        ex_file_name = os.path.splitext(input_data_file_name)[0] + '.exf'
+        write_ex(ex_file_name, read_xml(input_data_file_name))
+
+        # Read the ex file and ensure that it was loaded successfully
+        result = self._region.readFile(ex_file_name)
+        assert result == RESULT_OK, f"Failed to load data file {input_data_file_name}"
+
+        # Get groups that loaded from ex file
+        fieldmodule = self._region.getFieldmodule()
+        groupNames = [group.getName() for group in get_group_list(fieldmodule)]
+        assert groupNames, f"The data file {input_data_file_name} doesn't have any group."
+
+        # Get groups from scaffoldmaker by species and organ
+        if organ:
+            organ = organ.lower()
+            assert organ in self._allOrgan, f"The {organ} organ is not handled by the mapping tool."
+
+            get_term = self._allOrgan[organ]
+            for group in groupNames:
+                try:
+                    get_term(group)
+                except NameError:
+                    raise NameError(f"The data file {input_data_file_name} "
+                                    f"is not suited for mapping to the given organ.")
+
+
+
