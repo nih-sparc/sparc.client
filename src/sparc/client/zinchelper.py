@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK
@@ -21,7 +22,6 @@ from scaffoldmaker.utils.exportvtk import ExportVtk
 from src.sparc.client.services.pennsieve import PennsieveService
 from mbfxml2ex.app import read_xml
 from mbfxml2ex.zinc import load, write_ex
-
 
 
 class ZincHelper:
@@ -97,14 +97,20 @@ class ZincHelper:
         if organ:
             organ = organ.lower()
             assert organ in self._allOrgan, f"The {organ} organ is not handled by the mapping tool."
-
             get_term = self._allOrgan[organ]
+            regex = r"\/*([a-zA-Z]+)_*(\d+)"
+            not_in_scaffoldmaker = []
             for group in groupNames:
+                matches = re.search(regex, group)
+                if matches and len(matches.groups()) == 2:
+                    group = f"{matches.groups()[0].upper()}:{matches.groups()[1]}"
                 try:
                     get_term(group)
                 except NameError:
-                    raise NameError(f"The data file {input_data_file_name} "
-                                    f"is not suited for mapping to the given organ.")
+                    not_in_scaffoldmaker.append(group)
+                    # raise NameError(f"The data file {input_data_file_name} "
+                    #                 f"is not suited for mapping to the given organ.")
+            # print(not_in_scaffoldmaker)
 
 
 

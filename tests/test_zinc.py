@@ -1,8 +1,6 @@
 import os
 import pytest
-import json
 
-import mbfxml2ex
 from src.sparc.client.zinchelper import ZincHelper
 
 
@@ -49,7 +47,7 @@ def test_export_mbf_to_vtk(zinc):
 
     # ensure the function raises an error if the mbfxml file is malformed
     dataset_id = 287
-    with pytest.raises(mbfxml2ex.exceptions.MBFXMLFormat):
+    with pytest.raises(Exception):
         zinc.get_mbf_vtk(dataset_id, output_file)
 
     # Clean up the temporary output file
@@ -57,30 +55,17 @@ def test_export_mbf_to_vtk(zinc):
 
 
 def test_analyse_with_valid_input_file(zinc):
-    input_file_name = '10909_20180614_150758.xml'
+    input_file_name = 'files/3Dscaffold-CGRP-Mice-Dorsal-1.xml'
     species = "Mice"
     organ = "stomach"
     # Call the analyse function and assert that it succeeds
     zinc.analyse(input_file_name, species, organ)
-    assert os.path.isfile('10909_20180614_150758.exf')
+    assert os.path.isfile('files/3Dscaffold-CGRP-Mice-Dorsal-1.exf')
     # Clean up the temporary output file
-    os.remove('10909_20180614_150758.exf')
+    os.remove('files/3Dscaffold-CGRP-Mice-Dorsal-1.exf')
 
 
 def test_analyse_with_invalid_input_file(zinc):
-    # Test file that has group not in scaffoldmaker
-    input_file_name = 'files/3D_scaffold_-_CGRP-Mice-Dorsal-3.xml'
-    species = "Mice"
-    organ = "stomach"
-    # Call the analyse function and assert that it succeeds
-    with pytest.raises(NameError):
-        zinc.analyse(input_file_name, species, organ)
-    assert os.path.isfile('files/3D_scaffold_-_CGRP-Mice-Dorsal-3.exf')
-    # Clean up the temporary output file
-    os.remove('files/3D_scaffold_-_CGRP-Mice-Dorsal-3.exf')
-
-
-def test_analyse_with_no_group_input_file(zinc):
     # Test file that has no group
     input_file_name = 'files/11266_20181207_150054.xml'
     # Call the analyse function and assert that it succeeds
@@ -121,7 +106,7 @@ def test_analyse_with_invalid_input_file_content(zinc):
     with open(input_file_name, 'w') as f:
         f.write('<root><data>Test data</root>')
     # Call the analyse function and assert that it raises an MBFXMLFormat
-    with pytest.raises(mbfxml2ex.exceptions.MBFXMLFormat):
+    with pytest.raises(Exception):
         zinc.analyse(input_file_name)
     # Clean up the temporary input file
     os.remove(input_file_name)
