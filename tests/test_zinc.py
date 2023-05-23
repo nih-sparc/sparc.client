@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from src.sparc.client.zinchelper import ZincHelper
+from sparc.client.zinchelper import ZincHelper
 
 
 @pytest.fixture
@@ -11,7 +11,7 @@ def zinc():
 
 def test_get_scaffold_description(zinc):
     # create a temporary output file
-    output_file = "files/scaffold.vtk"
+    output_file = "resources/scaffold.vtk"
 
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
@@ -37,76 +37,83 @@ def test_get_scaffold_description(zinc):
 
 def test_export_mbf_to_vtk(zinc):
     # create a temporary output file
-    output_file = "files/mbf_vtk.vtk"
+    output_file = "resources/mbf_vtk.vtk"
 
     # ensure the function generates a VTK file with valid content
     dataset_id = 107
-    zinc.get_mbf_vtk(dataset_id, output_file)
+    dataset_file = "10991_20180817_143553.xml"
+    zinc.get_mbf_vtk(dataset_id, dataset_file, output_file)
     assert os.path.exists(output_file)
     assert os.path.getsize(output_file) > 0
 
     # ensure the function raises an error if the mbfxml file is malformed
     dataset_id = 287
+    dataset_file = "15_1.xml"
     with pytest.raises(Exception):
-        zinc.get_mbf_vtk(dataset_id, output_file)
+        zinc.get_mbf_vtk(dataset_id, dataset_file, output_file)
 
     # Clean up the temporary output file
     os.remove(output_file)
 
 
 def test_analyse_with_valid_input_file(zinc):
-    input_file_name = 'files/3Dscaffold-CGRP-Mice-Dorsal-1.xml'
+    input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
     species = "Mice"
     organ = "stomach"
+    expected = "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml " \
+               "is suited for mapping to the given organ. However, Axon, Blood vessel, " \
+               "Gastroduodenal junction, Muscle layer of cardia of stomach, Myenteric ganglia " \
+               "groups can not handled by the mapping tool yet."
     # Call the analyse function and assert that it succeeds
-    zinc.analyse(input_file_name, species, organ)
-    assert os.path.isfile('files/3Dscaffold-CGRP-Mice-Dorsal-1.exf')
+    assert zinc.analyse(input_file_name, organ, species) == expected
     # Clean up the temporary output file
-    os.remove('files/3Dscaffold-CGRP-Mice-Dorsal-1.exf')
+    os.remove("resources/3Dscaffold-CGRP-Mice-Dorsal-1.exf")
 
 
-def test_analyse_with_invalid_input_file(zinc):
+def test_analyse_with_input_file_without_group(zinc):
     # Test file that has no group
-    input_file_name = 'files/11266_20181207_150054.xml'
+    input_file_name = "test_input.xml"
+    organ = "stomach"
+    expected = f"The data file {input_file_name} doesn't have any group."
+    with open(input_file_name, "w") as f:
+        f.write("<root><data>Test data</data></root>")
     # Call the analyse function and assert that it succeeds
-    with pytest.raises(AssertionError):
-        zinc.analyse(input_file_name)
-    assert os.path.isfile('files/11266_20181207_150054.exf')
+    assert zinc.analyse(input_file_name, organ) == expected
     # Clean up the temporary output file
-    os.remove('files/11266_20181207_150054.exf')
-
-
-def test_analyse_with_input_file_not_suit(zinc):
-    # Create a temporary input file for testing
-    input_file_name = 'test_input.xml'
-    with open(input_file_name, 'w') as f:
-        f.write('<root><data>Test data</data></root>')
-    # Call the analyse function and assert that it raises an AssertionError
-    with pytest.raises(AssertionError):
-        zinc.analyse(input_file_name)
-    # Clean up the temporary input file
     os.remove(input_file_name)
+    os.remove("test_input.exf")
+
+
+def test_analyse_with_input_organ_not_suit(zinc):
+    # Create a temporary input file for testing
+    input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
+    organ = "Brain"
+    expected = f"The {organ.lower()} organ is not handled by the mapping tool."
+    # Call the analyse function and assert that it raises an AssertionError
+    assert zinc.analyse(input_file_name, organ) == expected
 
 
 def test_analyse_with_invalid_input_file_type(zinc):
     # Create a temporary input file with an invalid extension
-    input_file_name = 'test_input.txt'
-    with open(input_file_name, 'w') as f:
-        f.write('This is not an XML file')
+    input_file_name = "test_input.txt"
+    organ = "stomach"
+    with open(input_file_name, "w") as f:
+        f.write("This is not an XML file")
     # Call the analyse function and assert that it raises a ValueError
     with pytest.raises(ValueError):
-        zinc.analyse(input_file_name)
+        zinc.analyse(input_file_name, organ)
     # Clean up the temporary file
     os.remove(input_file_name)
 
 
 def test_analyse_with_invalid_input_file_content(zinc):
     # Create a temporary input file for testing
-    input_file_name = 'test_input.xml'
-    with open(input_file_name, 'w') as f:
-        f.write('<root><data>Test data</root>')
+    input_file_name = "test_input.xml"
+    organ = "stomach"
+    with open(input_file_name, "w") as f:
+        f.write("<root><data>Test data</root>")
     # Call the analyse function and assert that it raises an MBFXMLFormat
     with pytest.raises(Exception):
-        zinc.analyse(input_file_name)
+        zinc.analyse(input_file_name, organ)
     # Clean up the temporary input file
     os.remove(input_file_name)
