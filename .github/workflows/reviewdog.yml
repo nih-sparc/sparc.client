@@ -8,8 +8,6 @@ jobs:
   reviewdog:
     runs-on: ubuntu-latest
 
-    if: github.event.action == 'opened' || github.event.requested_team.name == 'reviewdog'
-
     steps:
 
     - name: Checkout
