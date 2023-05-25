@@ -25,7 +25,26 @@ from mbfxml2ex.zinc import load, write_ex
 
 
 class ZincHelper:
+    """
+    A helper class for working with Zinc and scaffoldmaker.
+
+    Attributes:
+        _allOrgan (dict): A dictionary mapping organ names to their corresponding scaffoldmaker term functions.
+        _context (Context): A Zinc context object.
+        _region (Region): A Zinc region object.
+        _pennsieveService (PennsieveService): A Pennsieve service object for file operations.
+
+    Methods:
+        download_files: Downloads files from Pennsieve.
+        get_scaffold_vtk: Generates a VTK file for the scaffold settings of a dataset.
+        get_mbf_vtk: Generates a VTK file for an MBF XML segmentation file.
+        analyse: Analyses an MBF XML file for mapping suitability to a specified organ.
+    """
+
     def __init__(self):
+        """
+        Initializes the ZincHelper class.
+        """
         self._allOrgan = {
             "bladder": get_bladder_term,
             "body": get_body_term,
@@ -40,40 +59,71 @@ class ZincHelper:
             "stellate": get_stellate_term,
             "stomach": get_stomach_term,
         }
-
         self._context = Context("sparcclient")
         self._region = self._context.getDefaultRegion()
         self._pennsieveService = PennsieveService(connect=False)
 
     def download_files(
-            self,
-            limit=10,
-            offset=0,
-            file_type=None,
-            query=None,
-            organization=None,
-            organization_id=None,
-            dataset_id=None
+        self,
+        output_name=None,
+        limit=10,
+        offset=0,
+        file_type=None,
+        query=None,
+        organization=None,
+        organization_id=None,
+        dataset_id=None,
     ):
+        """
+        Downloads files from Pennsieve.
+
+        Args:
+            output_name (str): The output name of downloaded files. Defaults to None.
+            limit (int): The maximum number of files to download.
+            offset (int): The offset for the file listing.
+            file_type (str): The type of files to download (e.g., 'JSON', 'XML').
+            query (str): The query string to filter the files.
+            organization (str): The organization name to filter the files.
+            organization_id (int): The organization ID to filter the files.
+            dataset_id (int): The dataset ID to filter the files.
+
+        Returns:
+            str: The name of the downloaded file.
+
+        Raises:
+            RuntimeError: If the dataset fails to download.
+        """
         file_list = self._pennsieveService.list_files(
             limit, offset, file_type, query, organization, organization_id, dataset_id
         )
         try:
-            response = self._pennsieveService.download_file(file_list=file_list)
+            response = self._pennsieveService.download_file(file_list, output_name)
         except Exception:
-            raise RuntimeError("The dataset is not downloaded.")
+            raise RuntimeError("The dataset failed to download.")
         assert response.status_code == 200
-        return file_list[0]["name"]
+        if output_name:
+            return output_name
+        else:
+            return file_list[0]["name"]
 
     def get_scaffold_vtk(self, dataset_id, output_file=None):
+        """
+        Generates a VTK file for the scaffold settings of a dataset.
+
+        Args:
+            dataset_id (int): The ID of the dataset to generate the VTK file for.
+            output_file (str): The name of the output VTK file. If not provided, a default name is used.
+        """
         scaffold_setting_file = self.download_files(
             limit=1,
-            file_type='JSON',
-            query="Scaffold_Creator-settings.json",
-            dataset_id=dataset_id
+            file_type="JSON",
+            query="Scaffold-settings.json",
+            dataset_id=dataset_id,
         )
         with open(scaffold_setting_file) as f:
             c = json.load(f)
+
+        os.remove(scaffold_setting_file)
 
         assert "scaffold_settings" in c
         assert "scaffoldPackage" in c["scaffold_settings"]
@@ -84,24 +134,43 @@ class ZincHelper:
         if not output_file:
             output_file = "Scaffold_Creator-settings.vtk"
         ex.writeFile(output_file)
-        os.remove(scaffold_setting_file)
 
     def get_mbf_vtk(self, dataset_id, dataset_file, output_file=None):
+        """
+        Generates a VTK file for an MBF XML segmentation file.
+
+        Args:
+            dataset_id (int): The ID of the dataset to generate the VTK file for.
+            dataset_file (str): The name of the MBF XML segmentation file.
+            output_file (str): The name of the output VTK file.
+                If not provided, dataset_file name with a vtk extension will be used.
+        """
         segmentation_file = self.download_files(
-            limit=1,
-            file_type="XML",
-            query=dataset_file,
-            dataset_id=dataset_id
+            limit=1, file_type="XML", query=dataset_file, dataset_id=dataset_id
         )
         contents = read_xml(segmentation_file)
         load(self._region, contents, None)
         ex = ExportVtk(self._region, "MBF XML VTK export.")
         if not output_file:
-            output_file = dataset_file.split(".")[0] + ".vtk"
+            output_file = os.path.splitext(dataset_file)[0] + ".vtk"
         ex.writeFile(output_file)
         os.remove(segmentation_file)
 
     def analyse(self, input_data_file_name, organ, species=None):
+        """
+        Analyses an MBF XML file for mapping suitability to a specified organ.
+
+        Args:
+            input_data_file_name (str): The name of the input MBF XML file.
+            organ (str): The name of the organ to analyse.
+            species (str, optional): The name of the species. Defaults to None.
+
+        Returns:
+            str: The analysis result message.
+
+        Raises:
+            ValueError: If the input file is not an MBF XML file.
+        """
         # Check input organ
         organ = organ.lower()
         if organ not in self._allOrgan:
@@ -111,7 +180,7 @@ class ZincHelper:
 
         # Check if the input file is an XML file
         if not input_data_file_name.endswith(".xml"):
-            raise ValueError("Input file must be a MBF XML file")
+            raise ValueError("Input file must be an MBF XML file")
 
         # Read the input data file and write the contents to an ex file
         ex_file_name = os.path.splitext(input_data_file_name)[0] + ".exf"
@@ -121,7 +190,7 @@ class ZincHelper:
         result = self._region.readFile(ex_file_name)
         assert result == RESULT_OK, f"Failed to load data file {input_data_file_name}"
 
-        # Get groups that loaded from ex file
+        # Get groups that were loaded from the ex file
         fieldmodule = self._region.getFieldmodule()
         groupNames = [group.getName() for group in get_group_list(fieldmodule)]
         if not groupNames:
@@ -140,8 +209,8 @@ class ZincHelper:
             except NameError:
                 not_in_scaffoldmaker.append(group)
         if not_in_scaffoldmaker:
-            return f"The data file {input_data_file_name} " \
-                   f"is suited for mapping to the given organ. " \
-                   f"However, {', '.join(not_in_scaffoldmaker)} groups can not handled by the mapping tool yet."
-        return f"The data file {input_data_file_name} " \
-               f"is perfectly suited for mapping to the given organ."
+            return (
+                f"The data file {input_data_file_name} is suited for mapping to the given organ. "
+                f"However, {', '.join(not_in_scaffoldmaker)} groups cannot be handled by the mapping tool yet."
+            )
+        return f"The data file {input_data_file_name} is perfectly suited for mapping to the given organ."

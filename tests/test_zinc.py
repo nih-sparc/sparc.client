@@ -11,7 +11,7 @@ def zinc():
 
 def test_get_scaffold_description(zinc):
     # create a temporary output file
-    output_file = "resources/scaffold.vtk"
+    output_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/scaffold.vtk"))
 
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
@@ -37,7 +37,7 @@ def test_get_scaffold_description(zinc):
 
 def test_export_mbf_to_vtk(zinc):
     # create a temporary output file
-    output_file = "resources/mbf_vtk.vtk"
+    output_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/mbf_vtk.vtk"))
 
     # ensure the function generates a VTK file with valid content
     dataset_id = 107
@@ -56,14 +56,26 @@ def test_export_mbf_to_vtk(zinc):
     os.remove(output_file)
 
 
-def test_analyse_with_valid_input_file(zinc):
+def test_analyse_with_suited_input_file(zinc):
+    input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"
+    species = "Mice"
+    organ = "stomach"
+    expected = "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml " \
+               "is perfectly suited for mapping to the given organ."
+    # Call the analyse function and assert that it succeeds
+    assert zinc.analyse(input_file_name, organ, species) == expected
+    # Clean up the temporary output file
+    os.remove("resources/3Dscaffold-CGRP-Mice-Dorsal-2.exf")
+
+
+def test_analyse_with_input_file_extra_groups(zinc):
     input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
     species = "Mice"
     organ = "stomach"
     expected = "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml " \
                "is suited for mapping to the given organ. However, Axon, Blood vessel, " \
                "Gastroduodenal junction, Muscle layer of cardia of stomach, Myenteric ganglia " \
-               "groups can not handled by the mapping tool yet."
+               "groups cannot be handled by the mapping tool yet."
     # Call the analyse function and assert that it succeeds
     assert zinc.analyse(input_file_name, organ, species) == expected
     # Clean up the temporary output file
@@ -84,7 +96,7 @@ def test_analyse_with_input_file_without_group(zinc):
     os.remove("test_input.exf")
 
 
-def test_analyse_with_input_organ_not_suit(zinc):
+def test_analyse_with_unhandled_organ(zinc):
     # Create a temporary input file for testing
     input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
     organ = "Brain"
