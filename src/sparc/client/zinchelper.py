@@ -65,7 +65,6 @@ class ZincHelper:
 
     def download_files(
         self,
-        output_name=None,
         limit=10,
         offset=0,
         file_type=None,
@@ -73,12 +72,12 @@ class ZincHelper:
         organization=None,
         organization_id=None,
         dataset_id=None,
+        output_name=None,
     ):
         """
         Downloads files from Pennsieve.
 
         Args:
-            output_name (str): The output name of downloaded files. Defaults to None.
             limit (int): The maximum number of files to download.
             offset (int): The offset for the file listing.
             file_type (str): The type of files to download (e.g., 'JSON', 'XML').
@@ -86,6 +85,7 @@ class ZincHelper:
             organization (str): The organization name to filter the files.
             organization_id (int): The organization ID to filter the files.
             dataset_id (int): The dataset ID to filter the files.
+            output_name (str): The output name of downloaded files. Defaults to None.
 
         Returns:
             str: The name of the downloaded file.

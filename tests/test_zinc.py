@@ -11,7 +11,9 @@ def zinc():
 
 def test_get_scaffold_description(zinc):
     # create a temporary output file
-    output_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/scaffold.vtk"))
+    output_file = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "resources/scaffold.vtk")
+    )
 
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
@@ -60,8 +62,10 @@ def test_analyse_with_suited_input_file(zinc):
     input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"
     species = "Mice"
     organ = "stomach"
-    expected = "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml " \
-               "is perfectly suited for mapping to the given organ."
+    expected = (
+        "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml " 
+        "is perfectly suited for mapping to the given organ."
+    )
     # Call the analyse function and assert that it succeeds
     assert zinc.analyse(input_file_name, organ, species) == expected
     # Clean up the temporary output file
@@ -72,10 +76,12 @@ def test_analyse_with_input_file_extra_groups(zinc):
     input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
     species = "Mice"
     organ = "stomach"
-    expected = "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml " \
-               "is suited for mapping to the given organ. However, Axon, Blood vessel, " \
-               "Gastroduodenal junction, Muscle layer of cardia of stomach, Myenteric ganglia " \
-               "groups cannot be handled by the mapping tool yet."
+    expected = (
+        "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml "
+        "is suited for mapping to the given organ. However, Axon, Blood vessel, "
+        "Gastroduodenal junction, Muscle layer of cardia of stomach, Myenteric ganglia "
+        "groups cannot be handled by the mapping tool yet."
+    )
     # Call the analyse function and assert that it succeeds
     assert zinc.analyse(input_file_name, organ, species) == expected
     # Clean up the temporary output file
