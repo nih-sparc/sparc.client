@@ -289,16 +289,16 @@ class PennsieveService(ServiceBase):
             },
         )
 
-    def download_file(self, file_list: dict, output_name: str = None):
+    def download_file(self, file_list: list[dict] | dict, output_name: str = None):
         """Downloads files into a local storage.
 
         Parameters:
         -----------
-        file_list : dict
+        file_list : list[dict] or dict
             names of the file(s) to download with their parameters.
             The files need to come from a single database.
         output_name : str
-            The name of the output file (used if the archive
+            The name of the output file
 
         Returns:
         --------
@@ -335,9 +335,7 @@ class PennsieveService(ServiceBase):
 
         # replace extension of the file with '.gz' if downloading more than 1 file
         if output_name is None:
-            output_name = (
-                file_list[0]["name"] if len(paths) == 1 else "download.gz"
-            )
+            output_name = file_list[0]["name"] if len(paths) == 1 else "download.gz"
 
         with open(output_name, mode="wb+") as f:
             f.write(response.content)

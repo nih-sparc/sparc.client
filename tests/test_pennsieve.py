@@ -161,7 +161,6 @@ def test_list_files(mocker, mock_pennsieve):
             "sourcePackageId": "N:package:aaaaaa",
         }
     ]
-
     mocker.patch("pennsieve2.Pennsieve.get", mock_pennsieve.list_files)
     p = PennsieveService(connect=False)
     actual = p.list_files()
@@ -236,7 +235,7 @@ def test_download(mocker, mock_pennsieve):
     response = p.download_file(file_list=file_list)
     assert response.status_code == 200
 
-    response = p.download_file(file_list=file_list, output_name='test')
+    response = p.download_file(file_list=file_list, output_name="test")
     assert response.status_code == 200
 
 
@@ -265,7 +264,7 @@ def test_download_multiple(mocker, mock_pennsieve):
             "uri": "s3://pennsieve/1/2/manifest2.json",
             "createdAt": None,
             "sourcePackageId": None,
-        }
+        },
     ]
 
     class PennsieveResponse:
@@ -283,5 +282,5 @@ def test_download_multiple(mocker, mock_pennsieve):
     response = p.download_file(file_list=file_list)
     assert response.status_code == 200
 
-    response = p.download_file(file_list=file_list, output_name='test')
+    response = p.download_file(file_list=file_list, output_name="test")
     assert response.status_code == 200
