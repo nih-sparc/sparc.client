@@ -63,7 +63,7 @@ def test_analyse_with_suited_input_file(zinc):
     species = "Mice"
     organ = "stomach"
     expected = (
-        "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml " 
+        "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml "
         "is perfectly suited for mapping to the given organ."
     )
     # Call the analyse function and assert that it succeeds
