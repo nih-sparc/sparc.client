@@ -9,7 +9,7 @@ from ._default import ServiceBase
 
 
 class PennsieveService(ServiceBase):
-    """A wrapper for Pennsieve2 library
+    """A wrapper for the Pennsieve2 library
 
     Parameters:
     -----------
@@ -25,7 +25,7 @@ class PennsieveService(ServiceBase):
     host_api : str
         A default HTTP address of the Pennsieve.
     Pennsieve : object
-        A class holding st
+        A class holding st.
 
 
     Methods:
@@ -133,19 +133,19 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         limit : int
-            max number of datasets returned
+            Max number of datasets returned.
         offset : int
-            offset used for pagination of results
+            Offset used for pagination of results.
         query : str
-            fuzzy text search terms (refer to elasticsearch)
+            Fuzzy text search terms (refer to elasticsearch).
         organization : str
-            publishing organization
+            Publishing organization.
         organization_id : int
-            publishing organization id
+            Publishing organization id.
         tags : list(str)
-            match dataset tags
+            Match dataset tags.
         embargo : bool
-            include embargoed datasets
+            Include embargoed datasets.
         order_by : str
             Field to order by:
                 name - dataset name
@@ -192,21 +192,21 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         limit : int
-            max number of datasets returned
+            Max number of datasets returned.
         offset : int
-            offset used for pagination of results
+            Offset used for pagination of results.
         file_type : str
-            type of file
+            Type of file.
         query : str
-            fuzzy text search terms (refer to elasticsearch)
+            Fuzzy text search terms (refer to elasticsearch).
         model : str
-            only return records of this model
+            Only return records of this model.
         organization : str
-            publishing organization
+            Publishing organization.
         organization_id : int
-            publishing organization id
+            Publishing organization id.
         dataset_id : int
-            files within this dataset
+            Files within this dataset.
 
         Returns:
         --------
@@ -266,15 +266,15 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         limit : int
-            max number of datasets returned
+            Max number of datasets returned.
         offset : int
-            offset used for pagination of results
+            Offset used for pagination of results.
         model : str
-            only return records of this model
+            Only return records of this model.
         organization : str
-            publishing organization
+            Publishing organization.
         dataset_id : int
-            files within this dataset
+            Files within this dataset.
         """
 
         return self.Pennsieve.get(
@@ -289,16 +289,16 @@ class PennsieveService(ServiceBase):
             },
         )
 
-    def download_file(self, file_list: dict, output_name: str = None):
+    def download_file(self, file_list: list[dict] | dict, output_name: str = None):
         """Downloads files into a local storage.
 
         Parameters:
         -----------
-        file_list : dict
-            names of the file(s) to download with their parameters.
+        file_list : list[dict] or dict
+            Names of the file(s) to download with their parameters.
             The files need to come from a single database.
         output_name : str
-            The name of the output file (used if the archive
+            The name of the output file.
 
         Returns:
         --------
@@ -335,9 +335,8 @@ class PennsieveService(ServiceBase):
 
         # replace extension of the file with '.gz' if downloading more than 1 file
         if output_name is None:
-            output_name = (
-                file_list[0]["name"] if len(paths) == 1 else os.path.splitext(file_list[0]) + ".gz"
-            )
+            output_name = file_list[0]["name"] if len(paths) == 1 else "download.gz"
+
         with open(output_name, mode="wb+") as f:
             f.write(response.content)
         return response
@@ -348,10 +347,10 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         url : str
-            the address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
+            The address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
             The name of the server can be ommitted.
         kwargs : dict
-            a dictionary storing additional information
+            A dictionary storing additional information.
 
         Returns:
         --------
@@ -371,12 +370,12 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         url : str
-            the address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
+            The address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
             The name of the server can be omitted.
         json : dict
-            a request payload with parameters defined by a given endpoint
+            A request payload with parameters defined by a given endpoint.
         kwargs : dict
-            additional information
+            Additional information.
 
         Returns:
         --------
@@ -390,12 +389,12 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         url : str
-            the address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
+            The address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
             The name of the server can be omitted.
         json : dict
-            a request payload with parameters defined by a given endpoint
+            A request payload with parameters defined by a given endpoint.
         kwargs : dict
-            additional information
+            Additional information.
 
         Returns:
         --------
@@ -409,9 +408,9 @@ class PennsieveService(ServiceBase):
         Parameters:
         -----------
         url : str
-            the address of the server endpoint to be called. The name of the server can be omitted.
+            The address of the server endpoint to be called. The name of the server can be omitted.
         kwargs : dict
-            additional information
+            Additional information.
 
         Returns:
         --------
