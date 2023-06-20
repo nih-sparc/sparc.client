@@ -4,10 +4,8 @@ from configparser import SectionProxy
 from typing import TypeAlias, Union
 
 import osparc
-from osparc.api import FilesApi, SolversApi
-from osparc.models import File, Job, JobInputs, JobOutputs, JobStatus, Profile, Solver
 
-from ._default import Any, ServiceBase
+from ._default import ServiceBase
 
 ConfigDict: TypeAlias = Union[dict, SectionProxy]
 
@@ -23,26 +21,23 @@ class OsparcService(ServiceBase):
     def __init__(self, config: ConfigDict | None = None, connect: bool = False) -> None:
         config = config or {}
 
+        self._api_client: osparc.ApiClient
+
         logging.info("Initializing Osparc...")
         logging.debug("%s", f"{config}")
 
-        self.set_profile(
+        user_name = self.set_profile(
             osparc_api_key=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
             osparc_api_secret=os.environ.get("OSPARC_API_SECRET")
             or config.get("osparc_api_secret"),
         )
 
-        logging.info("Profile: %s", self.profile_name)
+        logging.info("Profile: %s", user_name)
         if connect:
             self.connect()  # profile_name=self.profile_name)
 
     def connect(self):
         logging.info("Connecting to osparc...")
-
-        if self.profile_name is not None:
-            self._api_client.connect(profile_name=self.profile_name)
-        else:
-            self._api_client.connect()
         return self._api_client
 
     def info(self) -> str:
