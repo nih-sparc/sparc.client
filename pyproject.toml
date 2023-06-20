@@ -17,6 +17,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
+  "osparc~=0.5.0",
   "pennsieve2 >= 0.1.2",
 ]
 description = "NIH SPARC Python Client"
