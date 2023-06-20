@@ -1,21 +1,17 @@
 import logging
 import os
 from configparser import SectionProxy
-from typing import TypeAlias, Union
+from typing import Any, TypeAlias
 
 import osparc
+from osparc.models.profile import Profile
 
 from ._default import ServiceBase
 
-ConfigDict: TypeAlias = Union[dict, SectionProxy]
+ConfigDict: TypeAlias = dict[str, Any] | SectionProxy
 
 
 class OsparcService(ServiceBase):
-    default_headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json; charset=utf-8",
-    }
-
     host_api = "https://api.osparc.io"
 
     def __init__(self, config: ConfigDict | None = None, connect: bool = False) -> None:
@@ -26,15 +22,13 @@ class OsparcService(ServiceBase):
         logging.info("Initializing Osparc...")
         logging.debug("%s", f"{config}")
 
-        user_name = self.set_profile(
+        self.set_profile(
             osparc_api_key=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
             osparc_api_secret=os.environ.get("OSPARC_API_SECRET")
             or config.get("osparc_api_secret"),
         )
 
-        logging.info("Profile: %s", user_name)
-        if connect:
-            self.connect()  # profile_name=self.profile_name)
+        logging.info("Initialized osparc to %s", user_name)
 
     def connect(self):
         logging.info("Connecting to osparc...")
@@ -45,7 +39,7 @@ class OsparcService(ServiceBase):
 
     def get_profile(self) -> str:
         users_api = osparc.UsersApi(self._api_client)
-        profile = users_api.get_my_profile()
+        profile: Profile = users_api.get_my_profile()
         return profile.login
 
     def set_profile(self, osparc_api_key, osparc_api_secret) -> str:
@@ -54,7 +48,7 @@ class OsparcService(ServiceBase):
             password=osparc_api_secret,
         )
         self._api_client = osparc.ApiClient(cfg)
-        return self.get_profile()
+        self._users_api = osparc.UsersApi(self._api_client)
 
     def close(self) -> None:
         return self._api_client.close()
