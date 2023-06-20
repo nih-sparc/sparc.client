@@ -20,22 +20,15 @@ dependencies = [
   "pennsieve2 >= 0.1.2",
 ]
 description = "NIH SPARC Python Client"
-description = "NIH SPARC Python Client"
 keywords = ["data science", "datasets"]
-keywords = ["data science", "datasets"]
-license = {file = "LICENSE"}
 license = {file = "LICENSE"}
 maintainers = [
   {name = "Patryk Orzechowski", email = "patryk@upenn.edu"},
 ]
 name = "sparc.client"
-name = "sparc.client"
 readme = "README.md"
-readme = "README.md"
-requires-python = ">=3.10"
 requires-python = ">=3.10"
 version = "0.1.0"
-version = "0.0.1.post1"
 
 [project.optional-dependencies]
 test = [
