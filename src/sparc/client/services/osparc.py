@@ -9,48 +9,67 @@ from osparc.models.profile import Profile
 from ._default import ServiceBase
 
 ConfigDict: TypeAlias = dict[str, Any] | SectionProxy
+UserNameStr: TypeAlias = str
 
 
 class OsparcService(ServiceBase):
-    host_api = "https://api.osparc.io"
+    """Wraps osparc python client library and fulfills ServiceBase interface"""
 
-    def __init__(self, config: ConfigDict | None = None, connect: bool = False) -> None:
+    def __init__(self, config: ConfigDict | None = None, connect: bool = True) -> None:
         config = config or {}
-
-        self._api_client: osparc.ApiClient
-
         logging.info("Initializing Osparc...")
-        logging.debug("%s", f"{config}")
+        logging.debug("%s", f"{config=}")
 
-        self.set_profile(
-            osparc_api_key=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
-            osparc_api_secret=os.environ.get("OSPARC_API_SECRET")
-            or config.get("osparc_api_secret"),
+        self._client = osparc.ApiClient(
+            configuration=osparc.Configuration(
+                username=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
+                password=os.environ.get("OSPARC_API_SECRET") or config.get("osparc_api_secret"),
+            )
         )
 
-        logging.info("Initialized osparc to %s", user_name)
+        if connect:
+            self.connect()
 
-    def connect(self):
-        logging.info("Connecting to osparc...")
-        return self._api_client
+    def connect(self) -> osparc.APiClient:
+        """Explicitily initializes client pool (not required)"""
+        p = self._client.pool
+        logging.debug("%s was initialized", p)
+        return self._client
 
     def info(self) -> str:
-        return self._api_client.agent_version()
+        """Returns the version of osparc client."""
+        return self._client.user_agent.split("/")[1]
 
-    def get_profile(self) -> str:
-        users_api = osparc.UsersApi(self._api_client)
+    def get_profile(self) -> UserNameStr:
+        """Returns currently user profile.
+
+        Returns:
+        --------
+        A string with username.
+        """
+        users_api = osparc.UsersApi(self._client)
         profile: Profile = users_api.get_my_profile()
         return profile.login
 
-    def set_profile(self, osparc_api_key, osparc_api_secret) -> str:
-        cfg = osparc.Configuration(
-            username=osparc_api_key,
-            password=osparc_api_secret,
-        )
-        self._api_client = osparc.ApiClient(cfg)
-        self._users_api = osparc.UsersApi(self._api_client)
+    def set_profile(self, osparc_api_key: str, osparc_api_secret: str) -> UserNameStr:
+        """Changes to a different user profile
+
+        Parameters:
+        -----------
+        osparc_api_key : str
+            API key
+        osparc_api_secret : str
+            API secret
+
+        Returns:
+        --------
+        A string with username.
+        """
+        cfg = self._client.configuration
+        cfg.username = osparc_api_key
+        cfg.password = osparc_api_secret
+        return self.get_profile()
 
     def close(self) -> None:
-        return self._api_client.close()
-
-    # TODO: add here an osparc-specific operation
+        """Closes the osparc client."""
+        self._client.close()
