@@ -1,15 +1,24 @@
+import osparc
+import pytest
+from pytest import MonkeyPatch
 from pytest_mock import MockerFixture
 
-from sparc.client.services.osparc import OsparcService
+from sparc.client.services.o2sparc import OsparcService
+
+
+def mock_environment(monkeypatch: MonkeyPatch):
+    monkeypatch.setenv("OSPARC_API_KEY", "key")
+    monkeypatch.setenv("OSPARC_API_SECRET", "secret")
 
 
 def test_connect_no_profile(mocker: MockerFixture):
-    expected = None
-    mocker.patch("pennsieve2.Pennsieve.connect")
-    p = OsparcService(connect=False)
-    pennsieve = p.connect()
-    actual = pennsieve.get_user()
-    assert actual == expected
+    service = OsparcService(connect=False)
+    assert isinstance(service.connect(), osparc.ApiClient)
+
+    with pytest.raises(osparc.ApiException) as exc_info:
+        service.get_profile()
+
+    assert exc_info.value
 
 
 def test_connect_false_with_profile(mocker: MockerFixture, mock_user, mock_pennsieve):
@@ -62,17 +71,12 @@ def test_set_profile(mocker: MockerFixture, mock_pennsieve):
     assert expected == actual
 
 
-def test_info(mocker: MockerFixture, mock_pennsieve):
-    expected = "test version"
-    mocker.patch("pennsieve2.Pennsieve.agent_version", mock_pennsieve.agent_version)
+def test_info(mocker: MockerFixture):
     p = OsparcService(connect=False)
     actual = p.info()
-    assert expected == actual
+    assert "0.5.0" == actual
 
 
-def test_closed(mocker: MockerFixture, mock_pennsieve):
-    expected = "closed"
-    mocker.patch("pennsieve2.Pennsieve.stop", mock_pennsieve.close)
+def test_closed(mocker: MockerFixture):
     p = OsparcService(connect=False)
-    actual = p.close()
-    assert expected == actual
+    p.close()

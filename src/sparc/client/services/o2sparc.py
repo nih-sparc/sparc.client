@@ -3,8 +3,9 @@ import os
 from configparser import SectionProxy
 from typing import Any, TypeAlias
 
-import osparc
 from osparc.models.profile import Profile
+
+import sparc.client.services.o2sparc as o2sparc
 
 from ._default import ServiceBase
 
@@ -21,21 +22,21 @@ class OsparcService(ServiceBase):
         logging.debug("%s", f"{config=}")
 
         profile_name = config.get("pennsieve_profile_name", "prod")
-        assert profile_name in ["prod", "test", "ci"]  # nosec
+        if profile_name not in ["prod", "test", "ci"]:
+            raise ValueError(f"Invalid {profile_name=}.")
 
-        configuration = osparc.Configuration(
+        configuration = o2sparc.Configuration(
             username=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
             password=os.environ.get("OSPARC_API_SECRET") or config.get("osparc_api_secret"),
         )
         configuration.debug = profile_name == "test"
-        configuration.assert_hostname = profile_name == "prod"
 
-        self._client = osparc.ApiClient(configuration=configuration)
+        self._client = o2sparc.ApiClient(configuration=configuration)
 
         if connect:
             self.connect()
 
-    def connect(self) -> osparc.ApiClient:
+    def connect(self) -> o2sparc.ApiClient:
         """Explicitily initializes client pool (not required)"""
         p = self._client.pool
         logging.debug("%s was initialized", p)
@@ -52,7 +53,7 @@ class OsparcService(ServiceBase):
         --------
         A string with username.
         """
-        users_api = osparc.UsersApi(self._client)
+        users_api = o2sparc.UsersApi(self._client)
         profile: Profile = users_api.get_my_profile()
         return profile.login
 
