@@ -17,7 +17,7 @@ help:
 	@echo ""
 
 
-.PHONY: devenv
+
 
 .venv:
 	@python3 --version
@@ -29,8 +29,20 @@ help:
 		setuptools
 	@$@/bin/pip3 list --verbose
 
+
+.PHONY: devenv
 devenv: .venv ## create a development environment (configs, virtual-env, hooks, ...)
 	@.venv/bin/pip install --upgrade  pre-commit
 	# Installing pre-commit hooks in current .git repo
 	@.venv/bin/pre-commit install
 	@echo "To activate the venv, execute 'source .venv/bin/activate'"
+
+
+.PHONY: install-dev
+install-dev: ## installs package in editable mode
+	pip install --editable '.[test]'
+
+
+.PHONY: test-dev
+test-dev: ## runs tests
+	pytest --cov=./src -vv --pdb tests/
