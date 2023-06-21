@@ -20,12 +20,17 @@ class OsparcService(ServiceBase):
         logging.info("Initializing Osparc...")
         logging.debug("%s", f"{config=}")
 
-        self._client = osparc.ApiClient(
-            configuration=osparc.Configuration(
-                username=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
-                password=os.environ.get("OSPARC_API_SECRET") or config.get("osparc_api_secret"),
-            )
+        profile_name = config.get("pennsieve_profile_name", "prod")
+        assert profile_name in ["prod", "test", "ci"]  # nosec
+
+        configuration = osparc.Configuration(
+            username=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
+            password=os.environ.get("OSPARC_API_SECRET") or config.get("osparc_api_secret"),
         )
+        configuration.debug = profile_name == "test"
+        configuration.assert_hostname = profile_name == "prod"
+
+        self._client = osparc.ApiClient(configuration=configuration)
 
         if connect:
             self.connect()
