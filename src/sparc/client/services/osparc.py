@@ -35,7 +35,7 @@ class OsparcService(ServiceBase):
         if connect:
             self.connect()
 
-    def connect(self) -> osparc.APiClient:
+    def connect(self) -> osparc.ApiClient:
         """Explicitily initializes client pool (not required)"""
         p = self._client.pool
         logging.debug("%s was initialized", p)
