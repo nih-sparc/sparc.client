@@ -20,14 +20,20 @@ class OsparcService(ServiceBase):
         logging.info("Initializing Osparc...")
         logging.debug("%s", f"{config=}")
 
+        # reuse
         profile_name = config.get("pennsieve_profile_name", "prod")
         if profile_name not in ["prod", "test", "ci"]:
             raise ValueError(f"Invalid {profile_name=}.")
 
-        configuration = osparc.Configuration(
-            username=os.environ.get("OSPARC_API_KEY") or config.get("osparc_api_key"),
-            password=os.environ.get("OSPARC_API_SECRET") or config.get("osparc_api_secret"),
-        )
+        kwargs = {}
+        for name in ("host", "username", "password"):
+            env_name = f"OSPARC_{name.upper()}"
+            config_name = env_name.lower()
+            value = os.environ.get(env_name) or config.get(config_name)
+            if value is not None:
+                kwargs[name] = value
+
+        configuration = osparc.Configuration(**kwargs)
         configuration.debug = profile_name == "test"
 
         self._client = osparc.ApiClient(configuration=configuration)
