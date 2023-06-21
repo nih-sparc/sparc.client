@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import osparc
 import pytest
 from pytest import MonkeyPatch
@@ -9,9 +11,6 @@ from sparc.client.services.o2sparc import OsparcService
 def mock_environment(monkeypatch: MonkeyPatch):
     monkeypatch.setenv("OSPARC_USERNAME", "key")
     monkeypatch.setenv("OSPARC_PASSWORD", "secret")
-
-
-from http import HTTPStatus
 
 
 def test_connect_no_profile():
@@ -87,5 +86,6 @@ def test_info(mocker: MockerFixture):
 
 def test_closed(mocker: MockerFixture):
     p = OsparcService(connect=False)
+    p.close()
     p.close()
     p.close()
