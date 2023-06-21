@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import TypeAlias
 
 import osparc
 import pytest
@@ -7,85 +8,72 @@ from pytest_mock import MockerFixture
 
 from sparc.client.services.o2sparc import O2SparcService
 
-
-def mock_environment(monkeypatch: MonkeyPatch):
-    monkeypatch.setenv("OSPARC_USERNAME", "key")
-    monkeypatch.setenv("OSPARC_PASSWORD", "secret")
+EnvVarsDict: TypeAlias = dict[str, str]
 
 
-def test_connect_no_profile():
-    service = O2SparcService(connect=False)
-    assert isinstance(service.connect(), osparc.ApiClient)
+@pytest.fixture
+def mock_envs(monkeypatch: MonkeyPatch) -> EnvVarsDict:
+    envs = {
+        "O2SPARC_HOST": "https://fake-api.osparc.test",
+        "O2SPARC_USERNAME": "key",
+        "O2SPARC_PASSWORD": "secret",
+    }
+    for name, value in envs.items():
+        monkeypatch.setenv(name, f"{value}")
+    return envs
+
+
+@pytest.mark.parametrize("connect", [True, False])
+def test_init(mock_envs: EnvVarsDict, connect: bool):
+    o2p = O2SparcService(connect=connect)
+
+    o2p_client = o2p.connect()
+    assert isinstance(o2p_client, osparc.ApiClient)
+
+    assert o2p_client.configuration.host == mock_envs["O2SPARC_HOST"]
+    assert o2p_client.configuration.username == mock_envs["O2SPARC_USERNAME"]
+    assert o2p_client.configuration.password == mock_envs["O2SPARC_PASSWORD"]
+
+
+def test_init_from_config_and_envs(monkeypatch: MonkeyPatch, mock_envs: EnvVarsDict):
+    monkeypatch.delenv("O2SPARC_USERNAME", raising=False)
+    config = {
+        "o2sparc_host": "https://api.override.com",
+        "o2sparc_username": "right",
+        "username": "wrong",
+    }
+
+    o2p = O2SparcService(connect=False, config=config)
+
+    o2p_client = o2p.connect()
+    assert isinstance(o2p_client, osparc.ApiClient)
+
+    assert o2p_client.configuration.host == mock_envs["O2SPARC_HOST"]
+    assert o2p_client.configuration.username == config["o2sparc_username"]
+    assert o2p_client.configuration.password == mock_envs["O2SPARC_PASSWORD"]
+
+
+def test_connect_no_profile(mocker: MockerFixture):
+    mocker.patch(
+        "osparc.UsersApi.get_my_profile", side_effect=osparc.ApiException(HTTPStatus.UNAUTHORIZED)
+    )
+
+    o2p = O2SparcService(connect=False)
+    assert isinstance(o2p.connect(), osparc.ApiClient)
 
     with pytest.raises(osparc.ApiException) as exc_info:
-        service.get_profile()
+        _user_name = o2p.get_profile()
 
     error = exc_info.value
     assert error.status == HTTPStatus.UNAUTHORIZED
 
 
-@pytest.mark.skip(reason="under dev")
-def test_connect_false_with_profile(mocker: MockerFixture, mock_user, mock_pennsieve):
-    expected = "profile"
-    mocker.patch("pennsieve2.Pennsieve.connect")
-    mocker.patch("pennsieve2.Pennsieve.get_user", mock_user.get_user)
-    mock_user.set_user("profile")
-    p = O2SparcService(connect=False, config={"pennsieve_profile_name": "profile"})
-    pennsieve = p.connect()
-    actual = pennsieve.get_user()
-    assert actual == expected
-
-
-@pytest.mark.skip(reason="under dev")
-def test_connect_true_with_profile(mocker: MockerFixture, mock_user, mock_pennsieve):
-    expected = "test version"
-    mocker.patch("pennsieve2.Pennsieve.connect", mock_pennsieve.connect)
-    mocker.patch("pennsieve2.Pennsieve.agent_version", mock_pennsieve.agent_version)
-    mocker.patch("pennsieve2.Pennsieve.get_user", mock_user.get_user)
-    mock_user.set_user("profile")
-    p = O2SparcService(connect=True, config={"pennsieve_profile_name": "profile"})
-    pennsieve = p.connect()
-    assert pennsieve is not None
-    assert pennsieve.get_user() == "profile"
-    assert pennsieve.agent_version() == expected
-
-
-@pytest.mark.skip(reason="under dev")
-def test_get_profile(mocker: MockerFixture, mock_pennsieve, mock_user):
-    expected = "user"
-    mocker.patch("pennsieve2.Pennsieve.get_user", mock_user.get_user)
-    mock_user.set_user("user")
-
-    p = O2SparcService(connect=False)
-    actual = p.get_profile()
-    assert actual == expected
-
-
-@pytest.mark.skip(reason="under dev")
-def test_set_profile(mocker: MockerFixture, mock_pennsieve):
-    expected = "new user"
-    mocker.patch("pennsieve2.Pennsieve.switch", mock_pennsieve.switch)
-
-    class Manifest:
-        manifest = "manifest"
-
-        def __init__(self):
-            pass
-
-    p = O2SparcService(connect=False)
-    p.manifest = Manifest()
-    actual = p.set_profile("new user")
-    assert expected == actual
-
-
 def test_info(mocker: MockerFixture):
-    p = O2SparcService(connect=False)
-    actual = p.info()
+    o2p = O2SparcService(connect=False)
+    actual = o2p.info()
     assert "0.5.0" == actual
 
 
 def test_closed(mocker: MockerFixture):
-    p = O2SparcService(connect=False)
-    p.close()
-    p.close()
-    p.close()
+    o2p = O2SparcService(connect=False)
+    o2p.close()
