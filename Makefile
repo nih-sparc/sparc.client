@@ -46,20 +46,22 @@ test-dev: ## runs tests
 	pytest --cov=./src -vv --pdb tests/
 
 
-.PHONY: clean clean-images clean-venv clean-all clean-more
+.PHONY: clean clean-venv clean-hooks
 
-_git_clean_args := -dx --force --exclude=.vscode --exclude=TODO.md --exclude=.venv --exclude=.python-version --exclude="*keep*"
-_running_containers = $(shell docker ps -aq)
+_git_clean_args := -dx --force \
+	--exclude=.vscode \
+	--exclude=.venv \
+	--exclude=.python-version \
+	--exclude="*keep*"
 
 .check-clean:
 	@git clean -n $(_git_clean_args)
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 	@echo -n "$(shell whoami), are you REALLY sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 
-clean-venv: devenv ## Purges .venv into original configuration
+clean-venv: ## Removes .venv into original configuration
 	# Cleaning your venv
-	.venv/bin/pip-sync --quiet $(CURDIR)/requirements/devenv.txt
-	@pip list
+	-rm -rf .venv
 
 clean-hooks: ## Uninstalls git pre-commit hooks
 	@-pre-commit uninstall 2> /dev/null || rm .git/hooks/pre-commit
@@ -67,5 +69,3 @@ clean-hooks: ## Uninstalls git pre-commit hooks
 clean: .check-clean ## cleans all unversioned files in project and temp files create by this makefile
 	# Cleaning unversioned
 	@git clean $(_git_clean_args)
-	# Cleaning static-webserver/client
-	@$(MAKE_C) services/static-webserver/client clean-files

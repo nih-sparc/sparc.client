@@ -17,7 +17,7 @@ class OsparcService(ServiceBase):
 
     def __init__(self, config: ConfigDict | None = None, connect: bool = True) -> None:
         config = config or {}
-        logging.info("Initializing Osparc...")
+        logging.info("Initializing o2sparc...")
         logging.debug("%s", f"{config=}")
 
         # reuse
@@ -27,7 +27,7 @@ class OsparcService(ServiceBase):
 
         kwargs = {}
         for name in ("host", "username", "password"):
-            env_name = f"OSPARC_{name.upper()}"
+            env_name = f"O2SPARC_{name.upper()}"
             config_name = env_name.lower()
             value = os.environ.get(env_name) or config.get(config_name)
             if value is not None:
@@ -62,23 +62,23 @@ class OsparcService(ServiceBase):
         profile: Profile = users_api.get_my_profile()
         return profile.login
 
-    def set_profile(self, osparc_api_key: str, osparc_api_secret: str) -> UserNameStr:
+    def set_profile(self, username: str, password: str) -> UserNameStr:
         """Changes to a different user profile
 
         Parameters:
         -----------
-        osparc_api_key : str
-            API key
-        osparc_api_secret : str
-            API secret
+        username : str
+            API user key
+        password : str
+            API user secret
 
         Returns:
         --------
         A string with username.
         """
         cfg = self._client.configuration
-        cfg.username = osparc_api_key
-        cfg.password = osparc_api_secret
+        cfg.username = username
+        cfg.password = password
         return self.get_profile()
 
     def close(self) -> None:
