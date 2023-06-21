@@ -12,7 +12,7 @@ ConfigDict: TypeAlias = dict[str, Any] | SectionProxy
 UserNameStr: TypeAlias = str
 
 
-class OsparcService(ServiceBase):
+class O2SparcService(ServiceBase):
     """Wraps osparc python client library and fulfills ServiceBase interface"""
 
     def __init__(self, config: ConfigDict | None = None, connect: bool = True) -> None:
