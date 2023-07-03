@@ -5,12 +5,11 @@ from importlib import import_module
 from inspect import isabstract, isclass
 from pathlib import Path
 from pkgutil import iter_modules
-from typing import Optional, Union
 
 from .services import ServiceBase
 
 
-class SparcClient(object):
+class SparcClient:
     """
     The main class of the sparc.client library.
 
@@ -64,14 +63,15 @@ class SparcClient(object):
 
         for _, module_name, _ in iter_modules([package_dir]):
             # import the module and iterate through its attributes
+            print(f"module_name: {module_name}")
             self.add_module(
                 f"{__package__}.services.{module_name}", config[current_config], connect
             )
 
     def add_module(
         self,
-        paths: Union[str, list[str]],
-        config: Optional[Union[dict, SectionProxy]] = None,
+        paths: str | list[str],
+        config: dict | SectionProxy | None = None,
         connect: bool = True,
     ) -> None:
         """Adds and optionally connects to a module in a given path with configuration variables defined in config.

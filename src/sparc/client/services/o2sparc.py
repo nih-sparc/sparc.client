@@ -1,6 +1,7 @@
 import logging
 import os
 from configparser import SectionProxy
+from pathlib import Path
 from typing import Any, TypeAlias
 
 import osparc
@@ -10,6 +11,71 @@ from ._default import ServiceBase
 
 ConfigDict: TypeAlias = dict[str, Any] | SectionProxy
 UserNameStr: TypeAlias = str
+JobId: TypeAlias = str
+
+
+class O2SparcSolver:
+    """
+    Wrapper for osparc.Solver
+    """
+
+    def __init__(self, api_client: osparc.ApiClient, solver_key: str, solver_version: str):
+        self._files_api: osparc.FilesApi = osparc.FilesApi(api_client)
+        self._solvers_api: osparc.SolversApi = osparc.SolversApi(api_client)
+        self._solver: osparc.Solver = self._solvers_api.get_solver_release(
+            solver_key, solver_version
+        )
+        self._jobs: list[osparc.Job] = []
+
+    def submit_job(self, job_inputs: dict[str, str | int | float | Path]) -> JobId:
+        """
+        Submit a job to the solver/computational service.
+        The fields of the job_inputs must be one of the following types:
+            str, int, float, pathlib.Path,
+        where the pathlib.Path i is used to pass a file to the solver.
+        """
+        inputs: dict[str, str | int | float | osparc.File] = {}
+        for key in job_inputs:
+            inp = job_inputs[key]
+            if isinstance(inp, Path):
+                if not inp.is_file():
+                    raise RuntimeError(f"Input {key} is not a file.")
+                inputs[key] = self._files_api.upload_file(inp)
+            else:
+                inputs[key] = inp
+
+        job: osparc.Job = self._solvers_api.create_job(
+            self._solver.id, self._solver.version, osparc.JobInputs(inputs)
+        )
+        self._jobs.append(job)
+        self._solvers_api.start_job(self._solver.id, self._solver.version, job.id)
+        return job.id
+
+    def get_job_progress(self, job_id: JobId) -> float:
+        """
+        Returns the progress of the job, i.e. a float between 0.0 and 1.0 with a 1.0 indicating that the job is done.
+        """
+        status: osparc.JobStatus = self._solvers_api.inspect_job(
+            self._solver.id, self._solver.version, job_id
+        )
+        return float(status.progress / 100)
+
+    def job_done(self, job_id: JobId) -> bool:
+        """
+        Returns true if the job is done. False otherwise.
+        """
+        status: osparc.JobStatus = self._solvers_api.inspect_job(
+            self._solver.id, self._solver.version, job_id
+        )
+        return status.stopped_at
+
+    def get_results(self, job_id: JobId) -> dict[str, Any]:
+        if not self.job_done(job_id):
+            raise RuntimeError(f"The job with job_id={job_id} is not done yet.")
+        outputs: osparc.JobOutputs = self._solvers_api.get_job_outputs(
+            self._solver.id, self._solver.version, job_id
+        )
+        return outputs.results
 
 
 class O2SparcService(ServiceBase):
@@ -28,6 +94,7 @@ class O2SparcService(ServiceBase):
             if value is not None:
                 kwargs[name] = value
 
+        logging.debug(f"Config arguments:{kwargs}")
         configuration = osparc.Configuration(**kwargs)
 
         # reuses profile-name from penssieve to set debug mode
@@ -65,9 +132,9 @@ class O2SparcService(ServiceBase):
 
         Parameters:
         -----------
-        username : str
+        username :str
             API user key
-        password : str
+        password :str
             API user secret
 
         Returns:
@@ -82,3 +149,9 @@ class O2SparcService(ServiceBase):
     def close(self) -> None:
         """Closes the osparc client."""
         self._client.close()
+
+    def get_solver(self, solver_key: str, solver_version: str) -> O2SparcSolver:
+        """
+        Returns a computational service (solver) to which jobs can be submitted.
+        """
+        return O2SparcSolver(self._client, solver_key, solver_version)

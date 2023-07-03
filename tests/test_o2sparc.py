@@ -1,15 +1,44 @@
+import copy
 from http import HTTPStatus
+<<<<<<< HEAD
 from typing import TypeAlias
 from unittest.mock import MagicMock
+=======
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Any, TypeAlias
+>>>>>>> start implementing remaining functionality
 
 import osparc
 import pytest
 from pytest import MonkeyPatch
 from pytest_mock import MockerFixture
 
-from sparc.client.services.o2sparc import O2SparcService
+from sparc.client.services.o2sparc import O2SparcService, O2SparcSolver
 
 EnvVarsDict: TypeAlias = dict[str, str]
+Solver_Dict: TypeAlias = dict[str, str]
+
+
+def generate_dummy_job(inputs: osparc.JobInputs) -> osparc.Job:
+    """
+    Returns a dummy job given JobInputs
+    """
+    return osparc.Job(
+        inputs,
+        name="my_job",
+        inputs_checksum=10,
+        created_at=10.4,
+        runner_name="my_runner",
+        url="my_url",
+        runner_url="my_runner_url",
+        outputs_url="outputs_url",
+    )
+
+
+def create_job_mock(self, solver_id, solver_version, inputs):
+    create_job_mock.inputs = copy.copy(inputs)
+    return generate_dummy_job(osparc.JobInputs(inputs))
 
 
 @pytest.fixture
@@ -43,6 +72,46 @@ def mock_osparc(mocker: MockerFixture) -> MagicMock:
             }
         ),
     )
+
+@pytest.fixture
+def dummy_solver(mocker: MockerFixture, mock_envs: EnvVarsDict) -> O2SparcSolver:
+    """
+    Returns a O2SparcSolver "containing" a mock osparc.Solver
+    """
+    cfg: osparc.Configuration = osparc.Configuration()
+    cfg.host = mock_envs["O2SPARC_HOST"]
+    cfg.username = mock_envs["O2SPARC_USERNAME"]
+    cfg.password = mock_envs["O2SPARC_PASSWORD"]
+    api_client: osparc.ApiClient = osparc.ApiClient(cfg)
+
+    osparc_solver: osparc.Solver = osparc.Solver(
+        title="sleeper",
+        id="simcore/services/comp/itis/sleeper",
+        version="1.2.3",
+        maintainer="me",
+        url="123",
+    )
+    mocker.patch("osparc.SolversApi.get_solver_release", return_value=osparc_solver)
+    mocker.patch("osparc.SolversApi.create_job", create_job_mock)
+    mocker.patch("osparc.SolversApi.start_job", return_value=None)
+    sd: Solver_Dict = {
+        "solver_key": "simcore/services/comp/itis/sleeper",
+        "solver_version": "1.2.3",
+    }
+    return O2SparcSolver(api_client, sd["solver_key"], sd["solver_version"])
+
+
+@pytest.fixture
+def dummy_job_status() -> tuple[dict[str, Any], osparc.JobStatus]:
+    status = {
+        "job_id": "123",
+        "progress": 34,
+        "started_at": 3.5,
+        "state": "in_progress",
+        "stopped_at": 10.5,
+        "submitted_at": 20.4,
+    }
+    return (status, osparc.JobStatus(**status))
 
 
 @pytest.mark.parametrize("connect", [True, False])
@@ -116,3 +185,58 @@ def test_info(mocker: MockerFixture):
 def test_closed(mocker: MockerFixture):
     o2p = O2SparcService(connect=False)
     o2p.close()
+
+
+def test_submit_job(mocker: MockerFixture, dummy_solver: O2SparcSolver):
+    """
+    Test submit_job method
+    """
+
+    # test job inputs are submitted correctly
+    job_inputs: dict[str, Any] = {"my_float": 4.36, "my_int": 375, "my_str": "something"}
+    dummy_solver.submit_job(job_inputs)
+    for key in job_inputs:
+        assert create_job_mock.inputs.values[key] == job_inputs[key]
+
+    # test directory are not valid job inputs
+    with TemporaryDirectory() as tmp_dir:
+        job_inputs: dict[str, Any] = {"my_dir": Path(tmp_dir)}
+        with pytest.raises(RuntimeError) as exc_info:
+            dummy_solver.submit_job(job_inputs)
+
+
+def test_job_status(
+    mocker: MockerFixture,
+    dummy_solver: O2SparcSolver,
+    dummy_job_status: tuple[dict[str, Any], osparc.JobStatus],
+):
+    """
+    Tests that the solver can correctly return the job status job progress
+    """
+    job_inputs: dict[str, Any] = {"my_float": 4.36}
+    mocker.patch("osparc.SolversApi.inspect_job", return_value=dummy_job_status[1])
+
+    job_id = dummy_solver.submit_job(job_inputs)
+
+    assert dummy_solver.get_job_progress(job_id) == float(dummy_job_status[0]["progress"] / 100)
+    assert dummy_solver.job_done(job_id)
+
+
+def test_get_job_results(
+    mocker: MockerFixture,
+    dummy_solver: O2SparcSolver,
+    dummy_job_status: tuple[dict[str, Any], osparc.JobStatus],
+):
+
+    job_inputs: dict[str, Any] = {"my_float": 4.36}
+    results: dict[str, Any] = {"my_result": 2.34}
+    mocker.patch(
+        "osparc.SolversApi.get_job_outputs",
+        return_value=osparc.JobOutputs(job_id="123", results=results),
+    )
+    mocker.patch("osparc.SolversApi.inspect_job", return_value=dummy_job_status[1])
+
+    job_id = dummy_solver.submit_job(job_inputs)
+    dummy_results = dummy_solver.get_results(job_id)
+    for key in results:
+        assert results[key] == dummy_results[key]
