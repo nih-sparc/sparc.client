@@ -32,9 +32,15 @@ class O2SparcSolver:
     def submit_job(self, job_inputs: dict[str, str | int | float | Path]) -> JobId:
         """
         Submit a job to the solver/computational service.
-        The fields of the job_inputs must be one of the following types:
-            str, int, float, pathlib.Path,
-        where the pathlib.Path i is used to pass a file to the solver.
+
+        Parameters:
+        -----------
+        job_inputs: Dict[str, str | int | float | pathlib.Path]
+            When passing a file to the solver, pass it as a pathlib.Path object.
+
+        Returns:
+        --------
+        A string representing the job id.
         """
         inputs: dict[str, str | int | float | osparc.File] = {}
         for key in job_inputs:
@@ -55,7 +61,16 @@ class O2SparcSolver:
 
     def get_job_progress(self, job_id: JobId) -> float:
         """
-        Returns the progress of the job, i.e. a float between 0.0 and 1.0 with a 1.0 indicating that the job is done.
+        Get the job progress
+
+        Parameters:
+        -----------
+        job_id: str
+            The job id
+
+        Returns:
+        --------
+        A float between 0.0 and 1.0 indicating the progress of the job. 1.0 means the job is done.
         """
         status: osparc.JobStatus = self._solvers_api.inspect_job(
             self._solver.id, self._solver.version, job_id
@@ -64,7 +79,16 @@ class O2SparcSolver:
 
     def job_done(self, job_id: JobId) -> bool:
         """
-        Returns true if the job is done. False otherwise.
+        Job done
+
+        Parameters:
+        -----------
+        job_id: str
+            Job id
+
+        Returns:
+        --------
+        A bool which is True if and only if the job is done
         """
         status: osparc.JobStatus = self._solvers_api.inspect_job(
             self._solver.id, self._solver.version, job_id
@@ -73,7 +97,16 @@ class O2SparcSolver:
 
     def get_results(self, job_id: JobId) -> dict[str, Any]:
         """
-        Returns a dictionary containing the results from a job.
+        Get the results from a job
+
+        Parameters:
+        -----------
+        job_id: str
+            The job id
+
+        Returns:
+        --------
+        A dictionary containing the results.
         """
         if not self.job_done(job_id):
             raise RuntimeError(f"The job with job_id={job_id} is not done yet.")
@@ -92,7 +125,16 @@ class O2SparcSolver:
 
     def get_job_log(self, job_id: JobId) -> TemporaryDirectory:
         """
-        Returns a tempfile.TemporaryDirectory containing the log files from the job
+        Get the logs from a job
+
+        Parameters:
+        -----------
+        job_id: str
+            The job id
+
+        Returns:
+        --------
+        A tempfile.TemporaryDirectory holding the log files
         """
         logfile_path: str = self._solvers_api.get_job_output_logfile(
             self._solver.id, self._solver.version, job_id
@@ -180,7 +222,17 @@ class O2SparcService(ServiceBase):
         self._client.close()
 
     def get_solver(self, solver_key: str, solver_version: str) -> O2SparcSolver:
-        """
-        Returns a computational service (solver) to which jobs can be submitted.
+        """Get a computational service (solver) to which jobs can be submitted.
+
+        Parameters:
+        -----------
+        solver_key :str
+            Solver key
+        solver_version :str
+            Solver version
+
+        Returns:
+        --------
+        A O2SparcSolver object, to which jobs can be submitted
         """
         return O2SparcSolver(self._client, solver_key, solver_version)

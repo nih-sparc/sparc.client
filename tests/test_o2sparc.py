@@ -1,13 +1,10 @@
 import copy
 from http import HTTPStatus
-<<<<<<< HEAD
-from typing import TypeAlias
 from unittest.mock import MagicMock
-=======
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, TypeAlias
->>>>>>> start implementing remaining functionality
+from zipfile import ZipFile
 
 import osparc
 import pytest
@@ -240,3 +237,27 @@ def test_get_job_results(
     dummy_results = dummy_solver.get_results(job_id)
     for key in results:
         assert results[key] == dummy_results[key]
+
+
+def test_get_log(mocker: MockerFixture, dummy_solver: O2SparcSolver):
+    """
+    Test we can unzip log files
+    """
+    with TemporaryDirectory() as tmp_dir:
+        # setup logzip
+        name: str = "my_log_file"
+        content: str = "this is my logfile"
+        my_file = Path(tmp_dir) / name
+        my_file.write_text(content)
+        zipf = ZipFile(Path(tmp_dir) / "log.zip", "w")
+        zipf.write(my_file, my_file.relative_to(tmp_dir))
+        zipf.close()
+
+        # mock osparc method for getting logs
+        mocker.patch("osparc.SolversApi.get_job_output_logfile", return_value=zipf.filename)
+
+        # call solver to check we can retrieve dummy log
+        log_dir = dummy_solver.get_job_log("job_id")
+        assert (Path(log_dir.name) / name).is_file()
+        log_content = (Path(log_dir.name) / name).read_text()
+        assert content == log_content
