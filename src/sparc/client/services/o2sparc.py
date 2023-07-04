@@ -2,7 +2,9 @@ import logging
 import os
 from configparser import SectionProxy
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, TypeAlias
+from zipfile import ZipFile, is_zipfile
 
 import osparc
 from osparc.models.profile import Profile
@@ -87,6 +89,22 @@ class O2SparcSolver:
             else:
                 results[key] = r
         return results
+
+    def get_job_log(self, job_id: JobId) -> TemporaryDirectory:
+        """
+        Returns a tempfile.TemporaryDirectory containing the log files from the job
+        """
+        logfile_path: str = self._solvers_api.get_job_output_logfile(
+            self._solver.id, self._solver.version, job_id
+        )
+        if not (Path(logfile_path).is_file() and is_zipfile(logfile_path)):
+            raise RuntimeError("Could not download logfiles")
+
+        tmp_dir = TemporaryDirectory()
+        with ZipFile(logfile_path) as zf:
+            zf.extractall(tmp_dir.name)
+        os.remove(logfile_path)
+        return tmp_dir
 
 
 class O2SparcService(ServiceBase):
