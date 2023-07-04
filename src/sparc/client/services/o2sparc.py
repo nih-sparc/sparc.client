@@ -93,7 +93,7 @@ class O2SparcSolver:
         status: osparc.JobStatus = self._solvers_api.inspect_job(
             self._solver.id, self._solver.version, job_id
         )
-        return status.stopped_at
+        return not (status.stopped_at is None)
 
     def get_results(self, job_id: JobId) -> dict[str, Any]:
         """
