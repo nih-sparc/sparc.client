@@ -70,12 +70,23 @@ class O2SparcSolver:
         return status.stopped_at
 
     def get_results(self, job_id: JobId) -> dict[str, Any]:
+        """
+        Returns a dictionary containing the results from a job.
+        """
         if not self.job_done(job_id):
             raise RuntimeError(f"The job with job_id={job_id} is not done yet.")
         outputs: osparc.JobOutputs = self._solvers_api.get_job_outputs(
             self._solver.id, self._solver.version, job_id
         )
-        return outputs.results
+        results: dict[str, Any] = {}
+        for key in outputs.results:
+            r = outputs.results[key]
+            if isinstance(r, dict) and ("filename" in dir(r)) and ("id" in dir(r)):
+                download_path: str = self._files_api.download_file(file_id=r.id)
+                results[key] = Path(download_path)
+            else:
+                results[key] = r
+        return results
 
 
 class O2SparcService(ServiceBase):
