@@ -1,5 +1,7 @@
 @echo off
 
+@REM Auto generated with https://github.com/espositoandrea/Make-to-Batch
+
 
 IF /I "%1"==".DEFAULT_GOAL " GOTO .DEFAULT_GOAL
 IF /I "%1"=="SHELL " GOTO SHELL
