@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from typing import TypeAlias
+from unittest.mock import MagicMock
 
 import osparc
 import pytest
@@ -21,6 +22,27 @@ def mock_envs(monkeypatch: MonkeyPatch) -> EnvVarsDict:
     for name, value in envs.items():
         monkeypatch.setenv(name, f"{value}")
     return envs
+
+
+@pytest.fixture
+def mock_osparc(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch(
+        "osparc.UsersApi.get_my_profile",
+        return_value=osparc.Profile(
+            **{
+                "first_name": "James",
+                "last_name": "Maxwell",
+                "login": "james-maxwell@itis.swiss",
+                "role": "USER",
+                "groups": {
+                    "me": {"gid": "123", "label": "maxy", "description": "primary group"},
+                    "organizations": [],
+                    "all": {"gid": "1", "label": "Everyone", "description": "all users"},
+                },
+                "gravatar_id": "9a8930a5b20d7048e37740bac5c1ca4f",
+            }
+        ),
+    )
 
 
 @pytest.mark.parametrize("connect", [True, False])
@@ -66,6 +88,23 @@ def test_connect_no_profile(mocker: MockerFixture):
 
     error = exc_info.value
     assert error.status == HTTPStatus.UNAUTHORIZED
+
+
+def test_connect_profile(mock_osparc: MagicMock):
+    o2p = O2SparcService(connect=False)
+    assert isinstance(o2p.connect(), osparc.ApiClient)
+
+    assert o2p.get_profile() == "james-maxwell@itis.swiss"
+    assert mock_osparc.called
+
+
+def test_set_profile(mock_osparc: MagicMock):
+    o2p = O2SparcService(connect=False)
+    assert (
+        o2p.set_profile(username="other_user_key", password="other_user_secret")
+        == "james-maxwell@itis.swiss"
+    )
+    assert mock_osparc.called
 
 
 def test_info(mocker: MockerFixture):
