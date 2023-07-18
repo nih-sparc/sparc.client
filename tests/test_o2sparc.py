@@ -231,23 +231,36 @@ def test_job_status(
 
 
 def test_get_job_results(
+    tmp_path: Path,
     mocker: MockerFixture,
     dummy_solver: O2SparcSolver,
     dummy_job_status: tuple[dict[str, Any], osparc.JobStatus],
 ):
-
+    tmp_file = tmp_path / "my_file.txt"
+    tmp_file.write_text("my test file")
+    job_status: osparc.JobStatus = dummy_job_status[1]
     job_inputs: dict[str, Any] = {"my_float": 4.36}
-    results: dict[str, Any] = {"my_result": 2.34}
+    file: osparc.File = osparc.File(id=456, filename=tmp_file)
+    results: dict[str, Any] = {"my_result_float": 2.34, "my_result_file": file}
+    mocker.patch("osparc.FilesApi.download_file", return_value=str(file.filename))
     mocker.patch(
         "osparc.SolversApi.get_job_outputs",
         return_value=osparc.JobOutputs(job_id="123", results=results),
     )
-    mocker.patch("osparc.SolversApi.inspect_job", return_value=dummy_job_status[1])
+    mocker.patch("osparc.SolversApi.inspect_job", return_value=job_status)
 
+    # check we retrieve correct results
     job_id = dummy_solver.submit_job(job_inputs)
     dummy_results = dummy_solver.get_results(job_id)
-    for key in results:
-        assert results[key] == dummy_results[key]
+    assert results["my_result_float"] == dummy_results["my_result_float"]
+    assert results["my_result_file"].filename == dummy_results["my_result_file"]
+
+    # check we cannot retrieve results if job not done
+    job_status.stopped_at = None
+    mocker.patch("osparc.SolversApi.inspect_job", return_value=job_status)
+    with pytest.raises(RuntimeError) as exc_info:
+        job_id = dummy_solver.submit_job(job_inputs)
+        dummy_results = dummy_solver.get_results(job_id)
 
 
 def test_get_log(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2SparcSolver):
@@ -271,3 +284,10 @@ def test_get_log(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2SparcSol
     assert (Path(log_dir.name) / name).is_file()
     log_content = (Path(log_dir.name) / name).read_text()
     assert content == log_content
+
+    # mock osparc method for getting logs
+    mocker.patch("osparc.SolversApi.get_job_output_logfile", return_value=str(tmp_path))
+
+    # call solver to check we can retrieve dummy log
+    with pytest.raises(RuntimeError) as exc_info:
+        log_dir = dummy_solver.get_job_log("job_id")

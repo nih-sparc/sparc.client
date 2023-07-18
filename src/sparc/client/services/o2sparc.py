@@ -116,7 +116,7 @@ class O2SparcSolver:
         results: dict[str, Any] = {}
         for key in outputs.results:
             r = outputs.results[key]
-            if isinstance(r, dict) and ("filename" in dir(r)) and ("id" in dir(r)):
+            if isinstance(r, osparc.File):
                 download_path: str = self._files_api.download_file(file_id=r.id)
                 results[key] = Path(download_path)
             else:
