@@ -1,9 +1,8 @@
 import copy
 from http import HTTPStatus
-from unittest.mock import MagicMock
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Any, TypeAlias
+from unittest.mock import MagicMock
 from zipfile import ZipFile
 
 import osparc
@@ -69,6 +68,7 @@ def mock_osparc(mocker: MockerFixture) -> MagicMock:
             }
         ),
     )
+
 
 @pytest.fixture
 def dummy_solver(mocker: MockerFixture, mock_envs: EnvVarsDict) -> O2SparcSolver:
@@ -184,7 +184,7 @@ def test_closed(mocker: MockerFixture):
     o2p.close()
 
 
-def test_submit_job(mocker: MockerFixture, dummy_solver: O2SparcSolver):
+def test_submit_job(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2SparcSolver):
     """
     Test submit_job method
     """
@@ -196,10 +196,9 @@ def test_submit_job(mocker: MockerFixture, dummy_solver: O2SparcSolver):
         assert create_job_mock.inputs.values[key] == job_inputs[key]
 
     # test directory are not valid job inputs
-    with TemporaryDirectory() as tmp_dir:
-        job_inputs: dict[str, Any] = {"my_dir": Path(tmp_dir)}
-        with pytest.raises(RuntimeError) as exc_info:
-            dummy_solver.submit_job(job_inputs)
+    job_inputs: dict[str, Any] = {"my_dir": Path(tmp_path)}
+    with pytest.raises(RuntimeError) as exc_info:
+        dummy_solver.submit_job(job_inputs)
 
 
 def test_job_status(
@@ -239,25 +238,24 @@ def test_get_job_results(
         assert results[key] == dummy_results[key]
 
 
-def test_get_log(mocker: MockerFixture, dummy_solver: O2SparcSolver):
+def test_get_log(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2SparcSolver):
     """
     Test we can unzip log files
     """
-    with TemporaryDirectory() as tmp_dir:
-        # setup logzip
-        name: str = "my_log_file"
-        content: str = "this is my logfile"
-        my_file = Path(tmp_dir) / name
-        my_file.write_text(content)
-        zipf = ZipFile(Path(tmp_dir) / "log.zip", "w")
-        zipf.write(my_file, my_file.relative_to(tmp_dir))
-        zipf.close()
+    # setup logzip
+    name: str = "my_log_file"
+    content: str = "this is my logfile"
+    my_file = tmp_path / name
+    my_file.write_text(content)
+    zipf = ZipFile(tmp_path / "log.zip", "w")
+    zipf.write(my_file, my_file.relative_to(tmp_path))
+    zipf.close()
 
-        # mock osparc method for getting logs
-        mocker.patch("osparc.SolversApi.get_job_output_logfile", return_value=zipf.filename)
+    # mock osparc method for getting logs
+    mocker.patch("osparc.SolversApi.get_job_output_logfile", return_value=zipf.filename)
 
-        # call solver to check we can retrieve dummy log
-        log_dir = dummy_solver.get_job_log("job_id")
-        assert (Path(log_dir.name) / name).is_file()
-        log_content = (Path(log_dir.name) / name).read_text()
-        assert content == log_content
+    # call solver to check we can retrieve dummy log
+    log_dir = dummy_solver.get_job_log("job_id")
+    assert (Path(log_dir.name) / name).is_file()
+    log_content = (Path(log_dir.name) / name).read_text()
+    assert content == log_content
