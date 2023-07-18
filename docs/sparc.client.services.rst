@@ -4,7 +4,7 @@ sparc.client.services package
 Submodules
 ----------
 
-sparc.client.services.o2parc module
+sparc.client.services.o2sparc module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: sparc.client.services.o2sparc
