@@ -86,14 +86,14 @@ def dummy_solver(mocker: MockerFixture, mock_envs: EnvVarsDict) -> O2SparcSolver
     cfg.password = mock_envs["O2SPARC_PASSWORD"]
     api_client: osparc.ApiClient = osparc.ApiClient(cfg)
 
-    osparc_solver: osparc.Solver = osparc.Solver(
+    dummy_solver.osparc_solver = osparc.Solver(
         title="sleeper",
         id="simcore/services/comp/itis/sleeper",
         version="1.2.3",
         maintainer="me",
         url="123",
     )
-    mocker.patch("osparc.SolversApi.get_solver_release", return_value=osparc_solver)
+    mocker.patch("osparc.SolversApi.get_solver_release", return_value=dummy_solver.osparc_solver)
     mocker.patch("osparc.SolversApi.create_job", create_job_mock)
     mocker.patch("osparc.SolversApi.start_job", return_value=None)
     mocker.patch("osparc.FilesApi.upload_file", upload_file_mock)
@@ -291,3 +291,15 @@ def test_get_log(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2SparcSol
     # call solver to check we can retrieve dummy log
     with pytest.raises(RuntimeError) as exc_info:
         log_dir = dummy_solver.get_job_log("job_id")
+
+
+def test_get_solver(dummy_solver: O2SparcSolver) -> None:
+    """Test that we can call get_solver method from O2SparcService"""
+    config = {
+        "o2sparc_host": "https://api.override.com",
+        "o2sparc_username": "right",
+        "username": "wrong",
+    }
+    o2p = O2SparcService(connect=False, config=config)
+    solver = o2p.get_solver("mykey", "myid")
+    assert isinstance(solver, O2SparcSolver)
