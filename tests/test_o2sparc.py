@@ -32,9 +32,14 @@ def generate_dummy_job(inputs: osparc.JobInputs) -> osparc.Job:
     )
 
 
-def create_job_mock(self, solver_id, solver_version, inputs):
+def create_job_mock(self, solver_id, solver_version, inputs) -> osparc.Job:
     create_job_mock.inputs = copy.copy(inputs)
     return generate_dummy_job(osparc.JobInputs(inputs))
+
+
+def upload_file_mock(self, file: Path) -> osparc.File:
+    upload_file_mock.input = file
+    return osparc.File(id=0, filename=file.name)
 
 
 @pytest.fixture
@@ -91,6 +96,7 @@ def dummy_solver(mocker: MockerFixture, mock_envs: EnvVarsDict) -> O2SparcSolver
     mocker.patch("osparc.SolversApi.get_solver_release", return_value=osparc_solver)
     mocker.patch("osparc.SolversApi.create_job", create_job_mock)
     mocker.patch("osparc.SolversApi.start_job", return_value=None)
+    mocker.patch("osparc.FilesApi.upload_file", upload_file_mock)
     sd: Solver_Dict = {
         "solver_key": "simcore/services/comp/itis/sleeper",
         "solver_version": "1.2.3",
@@ -196,9 +202,15 @@ def test_submit_job(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2Sparc
         assert create_job_mock.inputs.values[key] == job_inputs[key]
 
     # test directory are not valid job inputs
-    job_inputs: dict[str, Any] = {"my_dir": Path(tmp_path)}
+    job_inputs: dict[str, Any] = {"my_dir": tmp_path}
     with pytest.raises(RuntimeError) as exc_info:
         dummy_solver.submit_job(job_inputs)
+
+    # test files are valid input files
+    tmp_file: Path = tmp_path / "test_file.txt"
+    tmp_file.write_text("hello from test")
+    job_inputs: dict[str, Any] = {"my_file": tmp_file}
+    dummy_solver.submit_job(job_inputs)
 
 
 def test_job_status(
