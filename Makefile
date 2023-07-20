@@ -43,7 +43,14 @@ install-dev: ## installs package in editable mode
 
 .PHONY: test-dev
 test-dev: ## runs tests
-	pytest --cov=./src -vv --pdb tests/
+	pytest \
+		--cov=./src \
+		-vv \
+		--pdb \
+		--cov-append \
+		--cov-report=term-missing \
+		--cov-report=xml \
+		tests/
 
 
 .PHONY: clean clean-venv clean-hooks

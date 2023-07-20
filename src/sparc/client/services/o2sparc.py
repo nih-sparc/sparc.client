@@ -20,11 +20,6 @@ class O2SparcService(ServiceBase):
         logging.info("Initializing o2sparc...")
         logging.debug("%s", f"{config=}")
 
-        # reuse
-        profile_name = config.get("pennsieve_profile_name", "prod")
-        if profile_name not in ["prod", "test", "ci"]:
-            raise ValueError(f"Invalid {profile_name=}.")
-
         kwargs = {}
         for name in ("host", "username", "password"):
             env_name = f"O2SPARC_{name.upper()}"
@@ -34,6 +29,9 @@ class O2SparcService(ServiceBase):
                 kwargs[name] = value
 
         configuration = osparc.Configuration(**kwargs)
+
+        # reuses profile-name from penssieve to set debug mode
+        profile_name = config.get("pennsieve_profile_name", "prod")
         configuration.debug = profile_name == "test"
 
         self._client = osparc.ApiClient(configuration=configuration)
