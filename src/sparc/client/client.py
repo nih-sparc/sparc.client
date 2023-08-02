@@ -63,7 +63,6 @@ class SparcClient:
 
         for _, module_name, _ in iter_modules([package_dir]):
             # import the module and iterate through its attributes
-            print(f"module_name: {module_name}")
             self.add_module(
                 f"{__package__}.services.{module_name}", config[current_config], connect
             )
