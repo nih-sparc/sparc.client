@@ -61,7 +61,7 @@ def test_export_mbf_to_vtk(zinc):
 def test_analyse_with_suited_input_file(zinc):
     input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"
     species = "Mice"
-    organ = "stomach"
+    organ = ["stomach", "esophagus"]
     expected = (
         "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml " 
         "is perfectly suited for mapping to the given organ."
@@ -75,7 +75,7 @@ def test_analyse_with_suited_input_file(zinc):
 def test_analyse_with_input_file_extra_groups(zinc):
     input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
     species = "Mice"
-    organ = "stomach"
+    organ = ["stomach", "esophagus"]
     expected = (
         "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml "
         "is suited for mapping to the given organ. However, Axon, Blood vessel, "
@@ -92,7 +92,8 @@ def test_analyse_with_input_file_without_group(zinc):
     # Test file that has no group
     input_file_name = "test_input.xml"
     organ = "stomach"
-    expected = f"The data file {input_file_name} doesn't have any group."
+    expected = f"The data file {input_file_name} doesn't have any groups, " \
+               f"therefore this data file is not suitable for mapping."
     with open(input_file_name, "w") as f:
         f.write("<root><data>Test data</data></root>")
     # Call the analyse function and assert that it succeeds

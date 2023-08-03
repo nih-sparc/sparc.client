@@ -156,13 +156,14 @@ class ZincHelper:
         ex.writeFile(output_file)
         os.remove(segmentation_file)
 
-    def analyse(self, input_data_file_name, organ, species=None):
+    def analyse(self, input_data_file_name, organs, species=None):
         """
         Analyses an MBF XML file for mapping suitability to a specified organ.
 
         Args:
             input_data_file_name (str): The name of the input MBF XML file.
-            organ (str): The name of the organ to analyse.
+            organs (str or list): The name of the organ(s) to analyse.
+                It can be a single string representing one organ or a list of strings representing multiple organs.
             species (str, optional): The name of the species. Defaults to None.
 
         Returns:
@@ -171,12 +172,24 @@ class ZincHelper:
         Raises:
             ValueError: If the input file is not an MBF XML file.
         """
-        # Check input organ
-        organ = organ.lower()
-        if organ not in self._allOrgan:
-            return f"The {organ} organ is not handled by the mapping tool."
-        # Get groups from scaffoldmaker by species and organ
-        get_term = self._allOrgan[organ]
+
+        # Check input organ and convert to a list if it's a single string
+        get_terms = []
+        if isinstance(organs, str):
+            organs = [organs]
+
+        # Loop through each organ in the list
+        for organ in organs:
+            # Convert the organ name to lowercase for case-insensitive comparison
+            organ = organ.lower()
+
+            # Check if the provided organ is handled by the mapping tool
+            if organ not in self._allOrgan:
+                return f"The {organ} organ is not handled by the mapping tool."
+
+            # Get the corresponding term (function) for the organ from the mapping tool
+            get_term = self._allOrgan[organ]
+            get_terms.append(get_term)
 
         # Check if the input file is an XML file
         if not input_data_file_name.endswith(".xml"):
@@ -193,21 +206,39 @@ class ZincHelper:
         # Get groups that were loaded from the ex file
         fieldmodule = self._region.getFieldmodule()
         groupNames = [group.getName() for group in get_group_list(fieldmodule)]
-        if not groupNames:
-            return f"The data file {input_data_file_name} doesn't have any group."
 
+        # If the ex file doesn't have any groups, it's not suitable for mapping
+        if not groupNames:
+            return f"The data file {input_data_file_name} doesn't have any groups, " \
+                   f"therefore this data file is not suitable for mapping."
+
+        # Regular expression pattern to extract group ID from Trace Association URL
         regex = r"\/*([a-zA-Z]+)_*(\d+)"
         not_in_scaffoldmaker = []
+
+        # Iterate through the group names and check their suitability for mapping
         for group in groupNames:
+            # Skip the 'marker' group
             if group == "marker":
                 continue
+
+            # Check if the group name matches the regex pattern and format it accordingly
             matches = re.search(regex, group)
             if matches and len(matches.groups()) == 2:
                 group = f"{matches.groups()[0].upper()}:{matches.groups()[1]}"
-            try:
-                get_term(group)
-            except NameError:
-                not_in_scaffoldmaker.append(group)
+
+            # Check if the group can be handled by the mapping tool for any of the specified organs
+            for get_term in get_terms:
+                try:
+                    get_term(group)
+                    if group in not_in_scaffoldmaker:
+                        not_in_scaffoldmaker.remove(group)
+                    break
+                except NameError:
+                    if group not in not_in_scaffoldmaker:
+                        not_in_scaffoldmaker.append(group)
+
+        # Generate the analysis result message based on the suitability of the groups
         if not_in_scaffoldmaker:
             return (
                 f"The data file {input_data_file_name} is suited for mapping to the given organ. "
