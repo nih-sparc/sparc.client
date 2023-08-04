@@ -161,7 +161,6 @@ def test_list_files(mocker, mock_pennsieve):
             "sourcePackageId": "N:package:aaaaaa",
         }
     ]
-
     mocker.patch("pennsieve2.Pennsieve.get", mock_pennsieve.list_files)
     p = PennsieveService(connect=False)
     actual = p.list_files()
@@ -234,4 +233,54 @@ def test_download(mocker, mock_pennsieve):
 
     p = PennsieveService(connect=False)
     response = p.download_file(file_list=file_list)
+    assert response.status_code == 200
+
+    response = p.download_file(file_list=file_list, output_name="test")
+    assert response.status_code == 200
+
+
+def test_download_multiple(mocker, mock_pennsieve):
+    file_list = [
+        {
+            "name": "manifest.json",
+            "datasetId": 1,
+            "datasetVersion": 1,
+            "size": 10000,
+            "fileType": "Json",
+            "packageType": "Unsupported",
+            "icon": "JSON",
+            "uri": "s3://pennsieve/1/2/manifest.json",
+            "createdAt": None,
+            "sourcePackageId": None,
+        },
+        {
+            "name": "manifest2.json",
+            "datasetId": 1,
+            "datasetVersion": 1,
+            "size": 20000,
+            "fileType": "Json",
+            "packageType": "Unsupported",
+            "icon": "JSON",
+            "uri": "s3://pennsieve/1/2/manifest2.json",
+            "createdAt": None,
+            "sourcePackageId": None,
+        },
+    ]
+
+    class PennsieveResponse:
+        status_code = 200
+        content = b'{"content" : "content}'
+
+    def response(url=None, json=None, headers=None):
+        return PennsieveResponse()
+
+    mocker.patch("requests.post", response)
+    mocker.patch("os.open")
+    mocker.patch("os.write")
+
+    p = PennsieveService(connect=False)
+    response = p.download_file(file_list=file_list)
+    assert response.status_code == 200
+
+    response = p.download_file(file_list=file_list, output_name="test")
     assert response.status_code == 200

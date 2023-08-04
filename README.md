@@ -44,17 +44,24 @@ Within each section, different configuration variables could be defined. In our 
 # Module automatic import
 
 Each python file in services/ folder with defined class name that is derived from BaseService is imported as a module to SparcClient class.
-For example, pennsieve.py file 
+
+For example, Pennsieve module could be used in the following way: 
 
 ```python
 from sparc.client import SparcClient
-a = SparcClient(connect=False, config_file='config.ini')
-module = a.pennsieve.connect()
-module.info() #execute internal functions of the module
+client = SparcClient(connect=False, config_file='config/config.ini')
+
+# Run module prerequisities, e.g. start Pennsieve agent in the background
+!pennsieve agent
+
+# connect to the Pennsieve module, get Pennsieve Agent object
+client.pennsieve.connect()
+
+# execute internal functions of the module
+client.pennsieve.info()
 
 # alternatively connect all the services available
-a.connect()  #connect to all services
-
+client.connect()  #connect to all services
 ```
 
 ## Test generation - PyTest
