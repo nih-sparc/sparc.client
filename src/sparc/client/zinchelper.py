@@ -2,9 +2,12 @@ import json
 import os
 import re
 
+from cmlibs.utils.zinc.field import get_group_list
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK
-from cmlibs.utils.zinc.field import get_group_list
+from mbfxml2ex.app import read_xml
+from mbfxml2ex.zinc import load, write_ex
+
 from scaffoldmaker import scaffolds
 from scaffoldmaker.annotation.bladder_terms import get_bladder_term
 from scaffoldmaker.annotation.body_terms import get_body_term
@@ -15,13 +18,12 @@ from scaffoldmaker.annotation.heart_terms import get_heart_term
 from scaffoldmaker.annotation.lung_terms import get_lung_term
 from scaffoldmaker.annotation.muscle_terms import get_muscle_term
 from scaffoldmaker.annotation.nerve_terms import get_nerve_term
-from scaffoldmaker.annotation.smallintestine_terms import get_smallintestine_term
+from scaffoldmaker.annotation.smallintestine_terms import \
+    get_smallintestine_term
 from scaffoldmaker.annotation.stellate_terms import get_stellate_term
 from scaffoldmaker.annotation.stomach_terms import get_stomach_term
 from scaffoldmaker.utils.exportvtk import ExportVtk
 from sparc.client.services.pennsieve import PennsieveService
-from mbfxml2ex.app import read_xml
-from mbfxml2ex.zinc import load, write_ex
 
 
 class ZincHelper:
