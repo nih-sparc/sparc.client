@@ -64,15 +64,15 @@ class ZincHelper:
         self._pennsieveService = PennsieveService(connect=False)
 
     def download_files(
-        self,
-        limit=10,
-        offset=0,
-        file_type=None,
-        query=None,
-        organization=None,
-        organization_id=None,
-        dataset_id=None,
-        output_name=None,
+            self,
+            limit=10,
+            offset=0,
+            file_type=None,
+            query=None,
+            organization=None,
+            organization_id=None,
+            dataset_id=None,
+            output_name=None,
     ):
         """
         Downloads files from Pennsieve.
@@ -209,8 +209,10 @@ class ZincHelper:
 
         # If the ex file doesn't have any groups, it's not suitable for mapping
         if not groupNames:
-            return f"The data file {input_data_file_name} doesn't have any groups, " \
-                   f"therefore this data file is not suitable for mapping."
+            return (
+                f"The data file {input_data_file_name} doesn't have any groups, "
+                f"therefore this data file is not suitable for mapping."
+            )
 
         # Regular expression pattern to extract group ID from Trace Association URL
         regex = r"\/*([a-zA-Z]+)_*(\d+)"
