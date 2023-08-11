@@ -77,7 +77,7 @@ def test_analyse_with_input_file_extra_groups(zinc):
     species = "Mice"
     organ = ["stomach", "esophagus"]
     expected = (
-        "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml "
+        "The data file resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml "
         "is suited for mapping to the given organ. However, Axon, Blood vessel, "
         "Gastroduodenal junction, Muscle layer of cardia of stomach, Myenteric ganglia "
         "groups cannot be handled by the mapping tool yet."
