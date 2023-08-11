@@ -82,6 +82,7 @@ def test_export_mbf_to_vtk_with_default_output_name(zinc):
     # Clean up the temporary output file
     os.remove("11266_20181207_150054.vtk")
 
+
 def test_analyse_with_suited_input_file(zinc):
     input_file_name = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"))
     species = "Mice"
