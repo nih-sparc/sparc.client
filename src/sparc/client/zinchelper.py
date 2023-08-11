@@ -64,14 +64,14 @@ class ZincHelper:
         self._pennsieveService = PennsieveService(connect=False)
 
     def download_files(
-            self,
-            limit=10,
-            offset=0,
-            file_type=None,
-            query=None,
-            organization=None,
-            organization_id=None,
-            dataset_id=None,
+        self,
+        limit=10,
+        offset=0,
+        file_type=None,
+        query=None,
+        organization=None,
+        organization_id=None,
+        dataset_id=None,
     ):
         """
         Downloads files from Pennsieve.
@@ -141,7 +141,10 @@ class ZincHelper:
                 If not provided, dataset_file name with a vtk extension will be used.
         """
         segmentation_file = self.download_files(
-            limit=1, file_type="XML", query=dataset_file, dataset_id=dataset_id,
+            limit=1,
+            file_type="XML",
+            query=dataset_file,
+            dataset_id=dataset_id,
         )
         contents = read_xml(segmentation_file)
         load(self._region, contents, None)
