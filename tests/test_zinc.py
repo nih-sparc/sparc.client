@@ -59,7 +59,7 @@ def test_export_mbf_to_vtk(zinc):
 
 
 def test_analyse_with_suited_input_file(zinc):
-    input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"
+    input_file_name = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"))
     species = "Mice"
     organ = ["stomach", "esophagus"]
     expected = (
@@ -73,7 +73,7 @@ def test_analyse_with_suited_input_file(zinc):
 
 
 def test_analyse_with_input_file_extra_groups(zinc):
-    input_file_name = "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"
+    input_file_name = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/3Dscaffold-CGRP-Mice-Dorsal-1.xml"))
     species = "Mice"
     organ = ["stomach", "esophagus"]
     expected = (
