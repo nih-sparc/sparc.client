@@ -69,7 +69,7 @@ def test_analyse_with_suited_input_file(zinc):
     # Call the analyse function and assert that it succeeds
     assert zinc.analyse(input_file_name, organ, species) == expected
     # Clean up the temporary output file
-    os.remove("resources/3Dscaffold-CGRP-Mice-Dorsal-2.exf")
+    os.remove(os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/3Dscaffold-CGRP-Mice-Dorsal-2.exf")))
 
 
 def test_analyse_with_input_file_extra_groups(zinc):
@@ -85,7 +85,7 @@ def test_analyse_with_input_file_extra_groups(zinc):
     # Call the analyse function and assert that it succeeds
     assert zinc.analyse(input_file_name, organ, species) == expected
     # Clean up the temporary output file
-    os.remove("resources/3Dscaffold-CGRP-Mice-Dorsal-1.exf")
+    os.remove(os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/3Dscaffold-CGRP-Mice-Dorsal-1.exf")))
 
 
 def test_analyse_with_input_file_without_group(zinc):
