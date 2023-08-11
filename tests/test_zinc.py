@@ -92,8 +92,10 @@ def test_analyse_with_input_file_without_group(zinc):
     # Test file that has no group
     input_file_name = "test_input.xml"
     organ = "stomach"
-    expected = f"The data file {input_file_name} doesn't have any groups, " \
-               f"therefore this data file is not suitable for mapping."
+    expected = (
+        f"The data file {input_file_name} doesn't have any groups, "
+        f"therefore this data file is not suitable for mapping."
+    )
     with open(input_file_name, "w") as f:
         f.write("<root><data>Test data</data></root>")
     # Call the analyse function and assert that it succeeds
