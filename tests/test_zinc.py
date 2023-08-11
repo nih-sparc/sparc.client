@@ -53,30 +53,34 @@ def test_export_mbf_to_vtk(zinc):
     output_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/mbf_vtk.vtk"))
 
     # ensure the function generates a VTK file with valid content
-    dataset_id = 107
-    dataset_file = "10991_20180817_143553.xml"
+    dataset_id = 121
+    dataset_file = "11266_20181207_150054.xml"
     zinc.get_mbf_vtk(dataset_id, dataset_file, output_file)
     assert os.path.exists(output_file)
     assert os.path.getsize(output_file) > 0
-
-    # ensure the function raises an error if the mbfxml file is malformed
-    dataset_id = 287
-    dataset_file = "15_1.xml"
-    with pytest.raises(Exception):
-        zinc.get_mbf_vtk(dataset_id, dataset_file, output_file)
 
     # Clean up the temporary output file
     os.remove(output_file)
 
 
+def test_export_mbf_to_vtk_with_malformed_mbfxml_file(zinc):
+    # ensure the function raises an error if the mbfxml file is malformed
+    dataset_id = 287
+    dataset_file = "15_1.xml"
+    with pytest.raises(Exception):
+        zinc.get_mbf_vtk(dataset_id, dataset_file)
+
+
 def test_export_mbf_to_vtk_with_default_output_name(zinc):
     # ensure the function generates a VTK file with valid content
-    dataset_id = 107
-    dataset_file = "10991_20180817_143553.xml"
+    dataset_id = 121
+    dataset_file = "11266_20181207_150054.xml"
     zinc.get_mbf_vtk(dataset_id, dataset_file)
-    assert os.path.exists("10991_20180817_143553.vtk")
-    assert os.path.getsize("10991_20180817_143553.vtk") > 0
+    assert os.path.exists("11266_20181207_150054.vtk")
+    assert os.path.getsize("11266_20181207_150054.vtk") > 0
 
+    # Clean up the temporary output file
+    os.remove("11266_20181207_150054.vtk")
 
 def test_analyse_with_suited_input_file(zinc):
     input_file_name = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/3Dscaffold-CGRP-Mice-Dorsal-2.xml"))

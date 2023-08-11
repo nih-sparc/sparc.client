@@ -72,7 +72,6 @@ class ZincHelper:
             organization=None,
             organization_id=None,
             dataset_id=None,
-            output_name=None,
     ):
         """
         Downloads files from Pennsieve.
@@ -85,7 +84,6 @@ class ZincHelper:
             organization (str): The organization name to filter the files.
             organization_id (int): The organization ID to filter the files.
             dataset_id (int): The dataset ID to filter the files.
-            output_name (str): The output name of downloaded files. Defaults to None.
 
         Returns:
             str: The name of the downloaded file.
@@ -97,14 +95,11 @@ class ZincHelper:
             limit, offset, file_type, query, organization, organization_id, dataset_id
         )
         try:
-            response = self._pennsieveService.download_file(file_list, output_name)
+            response = self._pennsieveService.download_file(file_list)
         except Exception:
             raise RuntimeError("The dataset failed to download.")
         assert response.status_code == 200
-        if output_name:
-            return output_name
-        else:
-            return file_list[0]["name"]
+        return file_list[0]["name"]
 
     def get_scaffold_vtk(self, dataset_id, output_file=None):
         """
@@ -119,7 +114,6 @@ class ZincHelper:
             file_type="JSON",
             query="Scaffold-settings.json",
             dataset_id=dataset_id,
-            output_name=output_file,
         )
         with open(scaffold_setting_file) as f:
             c = json.load(f)
@@ -147,7 +141,7 @@ class ZincHelper:
                 If not provided, dataset_file name with a vtk extension will be used.
         """
         segmentation_file = self.download_files(
-            limit=1, file_type="XML", query=dataset_file, dataset_id=dataset_id, output_name=output_file,
+            limit=1, file_type="XML", query=dataset_file, dataset_id=dataset_id,
         )
         contents = read_xml(segmentation_file)
         load(self._region, contents, None)
