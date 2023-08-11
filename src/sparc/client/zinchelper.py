@@ -119,6 +119,7 @@ class ZincHelper:
             file_type="JSON",
             query="Scaffold-settings.json",
             dataset_id=dataset_id,
+            output_name=output_file,
         )
         with open(scaffold_setting_file) as f:
             c = json.load(f)
@@ -146,7 +147,7 @@ class ZincHelper:
                 If not provided, dataset_file name with a vtk extension will be used.
         """
         segmentation_file = self.download_files(
-            limit=1, file_type="XML", query=dataset_file, dataset_id=dataset_id
+            limit=1, file_type="XML", query=dataset_file, dataset_id=dataset_id, output_name=output_file,
         )
         contents = read_xml(segmentation_file)
         load(self._region, contents, None)
@@ -214,12 +215,35 @@ class ZincHelper:
                 f"therefore this data file is not suitable for mapping."
             )
 
+        # Get groups that are not suitable for mapping.
+        not_in_scaffoldmaker = self.get_groups_not_in_scaffoldmaker(groupNames, get_terms)
+
+        # Generate the analysis result message based on the suitability of the groups
+        if not_in_scaffoldmaker:
+            return (
+                f"The data file {input_data_file_name} is suited for mapping to the given organ. "
+                f"However, {', '.join(not_in_scaffoldmaker)} groups cannot be handled by the mapping tool yet."
+            )
+        return f"The data file {input_data_file_name} is perfectly suited for mapping to the given organ."
+
+    def get_groups_not_in_scaffoldmaker(self, group_names, get_terms):
+        """
+        Identify and return groups that are not suitable for mapping in ScaffoldMaker.
+
+        Parameters:
+            group_names (list): A list of strings containing group names to be evaluated.
+            get_terms (list): A list of functions, each capable of determining the suitability of a group
+                             for mapping based on specific criteria.
+
+        Returns:
+            list: A list of group names that are not suitable for mapping in ScaffoldMaker.
+        """
         # Regular expression pattern to extract group ID from Trace Association URL
         regex = r"\/*([a-zA-Z]+)_*(\d+)"
         not_in_scaffoldmaker = []
 
         # Iterate through the group names and check their suitability for mapping
-        for group in groupNames:
+        for group in group_names:
             # Skip the 'marker' group
             if group == "marker":
                 continue
@@ -240,10 +264,4 @@ class ZincHelper:
                     if group not in not_in_scaffoldmaker:
                         not_in_scaffoldmaker.append(group)
 
-        # Generate the analysis result message based on the suitability of the groups
-        if not_in_scaffoldmaker:
-            return (
-                f"The data file {input_data_file_name} is suited for mapping to the given organ. "
-                f"However, {', '.join(not_in_scaffoldmaker)} groups cannot be handled by the mapping tool yet."
-            )
-        return f"The data file {input_data_file_name} is perfectly suited for mapping to the given organ."
+        return not_in_scaffoldmaker

@@ -37,6 +37,17 @@ def test_get_scaffold_description(zinc):
     os.remove(output_file)
 
 
+def test_get_scaffold_description_with_default_output_name(zinc):
+    # ensure the function generates a VTK file with valid content
+    dataset_id = 292
+    zinc.get_scaffold_vtk(dataset_id)
+    assert os.path.exists("Scaffold_Creator-settings.vtk")
+    assert os.path.getsize("Scaffold_Creator-settings.vtk") > 0
+
+    # Clean up the temporary output file
+    os.remove("Scaffold_Creator-settings.vtk")
+
+
 def test_export_mbf_to_vtk(zinc):
     # create a temporary output file
     output_file = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/mbf_vtk.vtk"))
@@ -56,6 +67,15 @@ def test_export_mbf_to_vtk(zinc):
 
     # Clean up the temporary output file
     os.remove(output_file)
+
+
+def test_export_mbf_to_vtk_with_default_output_name(zinc):
+    # ensure the function generates a VTK file with valid content
+    dataset_id = 107
+    dataset_file = "10991_20180817_143553.xml"
+    zinc.get_mbf_vtk(dataset_id, dataset_file)
+    assert os.path.exists("10991_20180817_143553.vtk")
+    assert os.path.getsize("10991_20180817_143553.vtk") > 0
 
 
 def test_analyse_with_suited_input_file(zinc):
