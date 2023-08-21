@@ -35,7 +35,6 @@ dependencies = [
   "mbfxml2ex >= 0.7.0",
 ]
 
-
 [project.optional-dependencies]
 test = [
   "pytest ~= 7.2",
