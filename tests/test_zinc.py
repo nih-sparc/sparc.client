@@ -10,27 +10,29 @@ def zinc():
     return ZincHelper()
 
 
-def test_get_scaffold_description(zinc):
+def test_export_scaffold_into_vtk_format(zinc):
     # create a temporary output file
-    output_file = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "resources/scaffold.vtk")
+    output_location = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "resources/")
     )
 
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
     result = None
     with pytest.raises(RuntimeError):
-        result = zinc.get_scaffold_vtk(invalid_dataset_id, output_file)
+        result = zinc.get_scaffold_vtk(invalid_dataset_id, output_location)
     assert result is None
 
     # ensure the function raises an error if the downloaded file is not scaffold_settings file
     dataset_id = 77
     with pytest.raises(AssertionError):
-        zinc.get_scaffold_vtk(dataset_id, output_file)
+        zinc.get_scaffold_vtk(dataset_id, output_location)
 
     # ensure the function generates a VTK file with valid content
     dataset_id = 292
-    zinc.get_scaffold_vtk(dataset_id, output_file)
+    zinc.get_scaffold_vtk(dataset_id, output_location)
+
+    output_file = os.path.join(output_location, "scaffold_root.vtk")
     assert os.path.exists(output_file)
     assert os.path.getsize(output_file) > 0
 
@@ -38,15 +40,45 @@ def test_get_scaffold_description(zinc):
     os.remove(output_file)
 
 
-def test_get_scaffold_description_with_default_output_name(zinc):
+def test_export_scaffold_into_stl_format(zinc):
+    # create a temporary output file
+    output_location = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "resources/")
+    )
+
+    # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
+    invalid_dataset_id = 1000000
+    result = None
+    with pytest.raises(RuntimeError):
+        result = zinc.get_scaffold_stl(invalid_dataset_id, output_location)
+    assert result is None
+
+    # ensure the function raises an error if the downloaded file is not scaffold_settings file
+    dataset_id = 77
+    with pytest.raises(AssertionError):
+        zinc.get_scaffold_stl(dataset_id, output_location)
+
+    # ensure the function generates a VTK file with valid content
+    dataset_id = 292
+    zinc.get_scaffold_stl(dataset_id, output_location)
+
+    output_file = os.path.join(output_location, "scaffold_zinc_graphics.stl")
+    assert os.path.exists(output_file)
+    assert os.path.getsize(output_file) > 0
+
+    # Clean up the temporary output file
+    os.remove(output_file)
+
+
+def test_export_scaffold_into_vtk_format_with_default_output_location(zinc):
     # ensure the function generates a VTK file with valid content
     dataset_id = 292
     zinc.get_scaffold_vtk(dataset_id)
-    assert os.path.exists("Scaffold_Creator-settings.vtk")
-    assert os.path.getsize("Scaffold_Creator-settings.vtk") > 0
+    assert os.path.exists("scaffold_root.vtk")
+    assert os.path.getsize("scaffold_root.vtk") > 0
 
     # Clean up the temporary output file
-    os.remove("Scaffold_Creator-settings.vtk")
+    os.remove("scaffold_root.vtk")
 
 
 def test_export_mbf_to_vtk(zinc):
