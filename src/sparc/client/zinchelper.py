@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
 from cmlibs.utils.zinc.field import get_group_list
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK
@@ -103,13 +104,14 @@ class ZincHelper:
         assert response.status_code == 200
         return file_list[0]["name"]
 
-    def get_scaffold_vtk(self, dataset_id, output_file=None):
+    def get_scaffold_vtk(self, dataset_id, output_location=None):
         """
         Generates a VTK file for the scaffold settings of a dataset.
 
         Args:
             dataset_id (int): The ID of the dataset to generate the VTK file for.
-            output_file (str): The name of the output VTK file. If not provided, a default name is used.
+            output_location (str): The output location for the generated VTK file.
+            If not provided, a default of the current working directory is used.
         """
         scaffold_setting_file = self.download_files(
             limit=1,
@@ -127,10 +129,11 @@ class ZincHelper:
 
         sm = scaffolds.Scaffolds_decodeJSON(c["scaffold_settings"]["scaffoldPackage"])
         sm.generate(self._region)
-        ex = ExportVtk(self._region, "Scaffold VTK export.")
-        if not output_file:
-            output_file = "Scaffold_Creator-settings.vtk"
-        ex.writeFile(output_file)
+        if not output_location:
+            output_location = "."
+
+        ex = VTKExporter(output_location, "scaffold")
+        ex.export_vtk_from_scene(self._region.getScene())
 
     def get_mbf_vtk(self, dataset_id, dataset_file, output_file=None):
         """
