@@ -164,12 +164,12 @@ class MetadataService(ServiceBase):
         else:
             result = {}
 
-        return result
+        return result.json()
 
 
 #####################################################################
-# Function to GET content from URL with retries
-    def postURL(self, url, body="{\"query\": { \"match_all\": {}}}", headers="NONE"):
+# Function to retrieve content via POST from URL with retries
+    def postURL(self, url, body, headers="NONE"):
 
         result = "[ERROR]"
         url_session = requests.Session()
@@ -180,13 +180,21 @@ class MetadataService(ServiceBase):
 
         url_session.mount('https://', HTTPAdapter(max_retries=retries))
 
+        try:
+            if type(body) is dict:
+                body_json = body
+            else:
+                body_json = json.loads(body)
+        except:
+                logging.error("Elasticsearch query body can not be read")
+                              
         success = 1
 
         try:
             if headers == "NONE":
-                url_result = url_session.post(url, json = body)
+                url_result = url_session.post(url, json = body_json)
             else:
-                url_result = url_session.post(url, json = body, headers=headers)
+                url_result = url_session.post(url, json = body_json, headers=headers)
 
             if url_result.status_code == 410:
                 logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
@@ -213,7 +221,7 @@ class MetadataService(ServiceBase):
         else:
             result = {}
 
-        return result
+        return result.json()
     
 
 #####################################################################
@@ -248,7 +256,7 @@ class MetadataService(ServiceBase):
 
     def search_datasets(
         self,
-        query: str = None
+        query: str = "{\"query\": { \"match_all\": {}}}"
     ) -> list:
         """Gets datasets matching specified query. 
         
