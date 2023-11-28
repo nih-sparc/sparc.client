@@ -1,0 +1,2 @@
+### Purpose of this folder
+This folder contains assets (files) used in different tutorials published on ReadMe (SPARC Help Center), for example [this Tutorial](https://docs.sparc.science/docs/getting-started-with-the-sparc-python-client)
