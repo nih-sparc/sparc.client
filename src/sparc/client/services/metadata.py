@@ -252,6 +252,8 @@ class MetadataService(ServiceBase):
         list_results = self.getURL(list_url, headers=self.default_headers)
         return list_results
 
+    def search_datasets(self, query: str = '{"query": { "match_all": {}}}') -> list:
+        """Gets datasets matching specified query.
 
         This function provides
 
