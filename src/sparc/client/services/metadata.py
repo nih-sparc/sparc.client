@@ -115,8 +115,8 @@ class MetadataService(ServiceBase):
         """Not needed as metadata services are REST service calls"""
         return self.host_api
 
-#####################################################################
-# Supporting Functions
+    #####################################################################
+    # Supporting Functions
 
 #####################################################################
 # Function to GET content from URL with retries
