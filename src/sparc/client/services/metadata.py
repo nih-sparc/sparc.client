@@ -254,13 +254,7 @@ class MetadataService(ServiceBase):
         return list_results
 
 
-    def search_datasets(
-        self,
-        query: str = "{\"query\": { \"match_all\": {}}}"
-    ) -> list:
-        """Gets datasets matching specified query. 
-        
-        This function provides 
+        This function provides
 
         Parameters:
         -----------
