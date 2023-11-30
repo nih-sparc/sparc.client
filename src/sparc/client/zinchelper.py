@@ -2,8 +2,8 @@ import json
 import os
 import re
 
-from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
 from cmlibs.exporter.stl import ArgonSceneExporter as STLExporter
+from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
 from cmlibs.utils.zinc.field import get_group_list
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK

@@ -10,7 +10,6 @@ from sparc.client.services import PennsieveService
 
 @responses.activate
 def test_register_responses():
-
     responses.add(
         method=responses.GET,
         url="http://api.pennsieve.io/datasets/",

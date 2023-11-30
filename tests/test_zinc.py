@@ -12,9 +12,7 @@ def zinc():
 
 def test_export_scaffold_into_vtk_format(zinc):
     # create a temporary output file
-    output_location = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "resources/")
-    )
+    output_location = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
 
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
@@ -42,9 +40,7 @@ def test_export_scaffold_into_vtk_format(zinc):
 
 def test_export_scaffold_into_stl_format(zinc):
     # create a temporary output file
-    output_location = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "resources/")
-    )
+    output_location = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
 
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000

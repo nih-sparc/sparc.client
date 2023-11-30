@@ -1,11 +1,11 @@
-import logging
 import json
+import logging
+from configparser import SectionProxy
+from typing import List, Optional, Union
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
 
-from configparser import SectionProxy
-from typing import List, Optional, Union
 from ._default import ServiceBase
 
 
@@ -75,7 +75,7 @@ class MetadataService(ServiceBase):
             self.connect()
 
     def connect(self) -> str:
-        """ Not needed as metadata services are REST service calls """
+        """Not needed as metadata services are REST service calls"""
         logging.info("Metadata REST services available...")
 
         self.host_api = "https://scicrunch.org/api/1/elastic"
@@ -115,21 +115,20 @@ class MetadataService(ServiceBase):
         """Not needed as metadata services are REST service calls"""
         return self.host_api
 
-#####################################################################
-# Supporting Functions
+    #####################################################################
+    # Supporting Functions
 
-#####################################################################
-# Function to GET content from URL with retries
+    #####################################################################
+    # Function to GET content from URL with retries
     def getURL(self, url, headers="NONE"):
-
         result = "[ERROR]"
         url_session = requests.Session()
 
-        retries = Retry(total=6,
-                        backoff_factor=1,
-                        status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504])
+        retries = Retry(
+            total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
+        )
 
-        url_session.mount('https://', HTTPAdapter(max_retries=retries))
+        url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
         success = 1
 
@@ -166,19 +165,17 @@ class MetadataService(ServiceBase):
 
         return result.json()
 
-
-#####################################################################
-# Function to retrieve content via POST from URL with retries
+    #####################################################################
+    # Function to retrieve content via POST from URL with retries
     def postURL(self, url, body, headers="NONE"):
-
         result = "[ERROR]"
         url_session = requests.Session()
 
-        retries = Retry(total=6,
-                        backoff_factor=1,
-                        status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504])
+        retries = Retry(
+            total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
+        )
 
-        url_session.mount('https://', HTTPAdapter(max_retries=retries))
+        url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
         try:
             if type(body) is dict:
@@ -186,15 +183,15 @@ class MetadataService(ServiceBase):
             else:
                 body_json = json.loads(body)
         except:
-                logging.error("Elasticsearch query body can not be read")
-                              
+            logging.error("Elasticsearch query body can not be read")
+
         success = 1
 
         try:
             if headers == "NONE":
-                url_result = url_session.post(url, json = body_json)
+                url_result = url_session.post(url, json=body_json)
             else:
-                url_result = url_session.post(url, json = body_json, headers=headers)
+                url_result = url_session.post(url, json=body_json, headers=headers)
 
             if url_result.status_code == 410:
                 logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
@@ -222,16 +219,11 @@ class MetadataService(ServiceBase):
             result = {}
 
         return result.json()
-    
 
-#####################################################################
-# Metadata Search Functions
+    #####################################################################
+    # Metadata Search Functions
 
-    def list_datasets(
-        self,
-        limit: int = 10,
-        offset: int = 0
-    ) -> list:
+    def list_datasets(self, limit: int = 10, offset: int = 0) -> list:
         """Lists datasets and associated metadata.
 
         Parameters:
@@ -248,19 +240,24 @@ class MetadataService(ServiceBase):
         """
         self.host_api = "https://scicrunch.org/api/1/elastic/SPARC_Algolia_pr/_search"
 
-        list_url = self.host_api + "?" + "from=" + str(offset) + "&size=" + str(limit) + "&key=" + self.scicrunch_api_key
+        list_url = (
+            self.host_api
+            + "?"
+            + "from="
+            + str(offset)
+            + "&size="
+            + str(limit)
+            + "&key="
+            + self.scicrunch_api_key
+        )
 
         list_results = self.getURL(list_url, headers=self.default_headers)
         return list_results
 
+    def search_datasets(self, query: str = '{"query": { "match_all": {}}}') -> list:
+        """Gets datasets matching specified query.
 
-    def search_datasets(
-        self,
-        query: str = "{\"query\": { \"match_all\": {}}}"
-    ) -> list:
-        """Gets datasets matching specified query. 
-        
-        This function provides 
+        This function provides
 
         Parameters:
         -----------
@@ -277,5 +274,5 @@ class MetadataService(ServiceBase):
 
         list_url = self.host_api + "?" + "key=" + self.scicrunch_api_key
 
-        list_results = self.postURL(list_url, body = query, headers=self.default_headers)
+        list_results = self.postURL(list_url, body=query, headers=self.default_headers)
         return list_results

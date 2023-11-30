@@ -1,10 +1,11 @@
 import logging
 import os
+from configparser import SectionProxy
+from typing import List, Optional, Union
 
 import requests
 from pennsieve2 import Pennsieve
-from configparser import SectionProxy
-from typing import List, Optional, Union
+
 from ._default import ServiceBase
 
 

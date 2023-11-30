@@ -4,6 +4,7 @@
 # Instructions for getting an API key can be found at: https://fdilab.gitbook.io/api-handbook/sparc-k-core-api-overview/getting-started-with-sparc-apis
 
 import json
+
 from sparc.client import SparcClient
 
 client = SparcClient(connect=False, config_file='../config/config.ini')
