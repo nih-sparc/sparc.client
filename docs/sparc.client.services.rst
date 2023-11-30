@@ -20,6 +20,14 @@ sparc.client.services.pennsieve module
    :undoc-members:
    :show-inheritance:
 
+sparc.client.services.metadata module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: sparc.client.services.metadata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ~~~~~~~~~~~~~~~
 
