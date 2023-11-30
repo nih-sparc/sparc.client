@@ -118,8 +118,8 @@ class MetadataService(ServiceBase):
     #####################################################################
     # Supporting Functions
 
-#####################################################################
-# Function to GET content from URL with retries
+    #####################################################################
+    # Function to GET content from URL with retries
     def getURL(self, url, headers="NONE"):
 
         result = "[ERROR]"
