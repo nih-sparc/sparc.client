@@ -75,7 +75,7 @@ class MetadataService(ServiceBase):
             self.connect()
 
     def connect(self) -> str:
-        """ Not needed as metadata services are REST service calls """
+        """Not needed as metadata services are REST service calls"""
         logging.info("Metadata REST services available...")
 
         self.host_api = "https://scicrunch.org/api/1/elastic"
