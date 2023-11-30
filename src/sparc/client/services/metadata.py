@@ -121,7 +121,6 @@ class MetadataService(ServiceBase):
     #####################################################################
     # Function to GET content from URL with retries
     def getURL(self, url, headers="NONE"):
-
         result = "[ERROR]"
         url_session = requests.Session()
 
