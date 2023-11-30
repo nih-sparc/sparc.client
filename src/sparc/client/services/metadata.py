@@ -272,5 +272,5 @@ class MetadataService(ServiceBase):
 
         list_url = self.host_api + "?" + "key=" + self.scicrunch_api_key
 
-        list_results = self.postURL(list_url, body = query, headers=self.default_headers)
+        list_results = self.postURL(list_url, body=query, headers=self.default_headers)
         return list_results
