@@ -6,8 +6,6 @@ from typing import List, Optional, Union
 import requests
 from requests.adapters import HTTPAdapter, Retry
 
-from configparser import SectionProxy
-from typing import List, Optional, Union
 from ._default import ServiceBase
 
 
