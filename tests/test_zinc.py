@@ -58,7 +58,31 @@ def test_export_scaffold_into_stl_format(zinc):
     with pytest.raises(AssertionError):
         zinc.get_scaffold_stl(dataset_id, output_location)
 
-    # ensure the function generates a VTK file with valid content
+    # ensure the function generates an STL file with valid content
+    dataset_id = 292
+    zinc.get_scaffold_stl(dataset_id, output_location)
+
+    output_file = os.path.join(output_location, "scaffold_zinc_graphics.stl")
+    assert os.path.exists(output_file)
+    assert os.path.getsize(output_file) > 0
+
+    # Clean up the temporary output file
+    os.remove(output_file)
+
+
+def _mock_get_scaffold(self, dataset_id):
+    self._region.readFile(os.path.join(os.path.dirname(__file__), "resources", "cube.exf"))
+
+
+def test_export_scaffold_into_stl_format_non_default_coordinates(zinc):
+    # create a temporary output file
+    output_location = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "resources/")
+    )
+
+    zinc._get_scaffold = _mock_get_scaffold.__get__(zinc)
+
+    # ensure the function generates an STL file with valid content
     dataset_id = 292
     zinc.get_scaffold_stl(dataset_id, output_location)
 

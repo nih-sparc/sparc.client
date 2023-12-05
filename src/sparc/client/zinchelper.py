@@ -4,7 +4,7 @@ import re
 
 from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
 from cmlibs.exporter.stl import ArgonSceneExporter as STLExporter
-from cmlibs.utils.zinc.field import get_group_list
+from cmlibs.utils.zinc.field import get_group_list, field_exists
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK
 from mbfxml2ex.app import read_xml
@@ -161,7 +161,21 @@ class ZincHelper:
             output_location = "."
 
         ex = STLExporter(output_location, "scaffold")
-        ex.export_stl_from_scene(self._region.getScene())
+        scene = self._region.getScene()
+        surfaces = scene.createGraphicsSurfaces()
+        surfaces.setBoundaryMode(surfaces.BOUNDARY_MODE_BOUNDARY)
+        fm = self._region.getFieldmodule()
+        coordinates = fm.findFieldByName("coordinates")
+        if not coordinates.isValid():
+            field_iterator = fm.createFielditerator()
+            field = field_iterator.next()
+            while field.isValid() and not coordinates.isValid():
+                if field_exists(fm, field.getName(), 'FiniteElement', 3):
+                    coordinates = field
+                field = field_iterator.next()
+
+        surfaces.setCoordinateField(coordinates)
+        ex.export_stl_from_scene(scene)
 
     def get_mbf_vtk(self, dataset_id, dataset_file, output_file=None):
         """
