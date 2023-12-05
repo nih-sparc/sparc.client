@@ -129,9 +129,9 @@ class ZincHelper:
         sm = scaffolds.Scaffolds_decodeJSON(c["scaffold_settings"]["scaffoldPackage"])
         sm.generate(self._region)
 
-    def get_scaffold_vtk(self, dataset_id, output_location=None):
+    def get_scaffold_as_vtk(self, dataset_id, output_location=None):
         """
-        Generates a VTK file for the scaffold settings of a dataset.
+        Generates a VTK file from the scaffold settings defined in a dataset.
 
         Args:
             dataset_id (int): The ID of the dataset to generate the VTK file for.
@@ -146,9 +146,9 @@ class ZincHelper:
         ex = VTKExporter(output_location, "scaffold")
         ex.export_vtk_from_scene(self._region.getScene())
 
-    def get_scaffold_stl(self, dataset_id, output_location=None):
+    def get_scaffold_as_stl(self, dataset_id, output_location=None):
         """
-        Generates an STL file for the scaffold settings of a dataset.
+        Generates an STL file from the scaffold settings defined in a dataset.
 
         Args:
             dataset_id (int): The ID of the dataset to generate the STL file for.
@@ -164,6 +164,7 @@ class ZincHelper:
         scene = self._region.getScene()
         surfaces = scene.createGraphicsSurfaces()
         surfaces.setBoundaryMode(surfaces.BOUNDARY_MODE_BOUNDARY)
+
         fm = self._region.getFieldmodule()
         coordinates = fm.findFieldByName("coordinates")
         if not coordinates.isValid():
@@ -172,6 +173,7 @@ class ZincHelper:
             while field.isValid() and not coordinates.isValid():
                 if field_exists(fm, field.getName(), 'FiniteElement', 3):
                     coordinates = field
+
                 field = field_iterator.next()
 
         surfaces.setCoordinateField(coordinates)

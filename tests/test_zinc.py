@@ -20,17 +20,17 @@ def test_export_scaffold_into_vtk_format(zinc):
     invalid_dataset_id = 1000000
     result = None
     with pytest.raises(RuntimeError):
-        result = zinc.get_scaffold_vtk(invalid_dataset_id, output_location)
+        result = zinc.get_scaffold_as_vtk(invalid_dataset_id, output_location)
     assert result is None
 
     # ensure the function raises an error if the downloaded file is not scaffold_settings file
     dataset_id = 77
     with pytest.raises(AssertionError):
-        zinc.get_scaffold_vtk(dataset_id, output_location)
+        zinc.get_scaffold_as_vtk(dataset_id, output_location)
 
     # ensure the function generates a VTK file with valid content
     dataset_id = 292
-    zinc.get_scaffold_vtk(dataset_id, output_location)
+    zinc.get_scaffold_as_vtk(dataset_id, output_location)
 
     output_file = os.path.join(output_location, "scaffold_root.vtk")
     assert os.path.exists(output_file)
@@ -50,17 +50,17 @@ def test_export_scaffold_into_stl_format(zinc):
     invalid_dataset_id = 1000000
     result = None
     with pytest.raises(RuntimeError):
-        result = zinc.get_scaffold_stl(invalid_dataset_id, output_location)
+        result = zinc.get_scaffold_as_stl(invalid_dataset_id, output_location)
     assert result is None
 
     # ensure the function raises an error if the downloaded file is not scaffold_settings file
     dataset_id = 77
     with pytest.raises(AssertionError):
-        zinc.get_scaffold_stl(dataset_id, output_location)
+        zinc.get_scaffold_as_stl(dataset_id, output_location)
 
     # ensure the function generates an STL file with valid content
     dataset_id = 292
-    zinc.get_scaffold_stl(dataset_id, output_location)
+    zinc.get_scaffold_as_stl(dataset_id, output_location)
 
     output_file = os.path.join(output_location, "scaffold_zinc_graphics.stl")
     assert os.path.exists(output_file)
@@ -84,7 +84,7 @@ def test_export_scaffold_into_stl_format_non_default_coordinates(zinc):
 
     # ensure the function generates an STL file with valid content
     dataset_id = 292
-    zinc.get_scaffold_stl(dataset_id, output_location)
+    zinc.get_scaffold_as_stl(dataset_id, output_location)
 
     output_file = os.path.join(output_location, "scaffold_zinc_graphics.stl")
     assert os.path.exists(output_file)
@@ -97,12 +97,24 @@ def test_export_scaffold_into_stl_format_non_default_coordinates(zinc):
 def test_export_scaffold_into_vtk_format_with_default_output_location(zinc):
     # ensure the function generates a VTK file with valid content
     dataset_id = 292
-    zinc.get_scaffold_vtk(dataset_id)
+    zinc.get_scaffold_as_vtk(dataset_id)
     assert os.path.exists("scaffold_root.vtk")
     assert os.path.getsize("scaffold_root.vtk") > 0
 
     # Clean up the temporary output file
     os.remove("scaffold_root.vtk")
+
+
+def test_export_scaffold_into_stl_format_with_default_output_location(zinc):
+    # ensure the function generates a VTK file with valid content
+    dataset_id = 292
+    zinc.get_scaffold_as_stl(dataset_id)
+
+    assert os.path.exists("scaffold_zinc_graphics.stl")
+    assert os.path.getsize("scaffold_zinc_graphics.stl") > 0
+
+    # Clean up the temporary output file
+    os.remove("scaffold_zinc_graphics.stl")
 
 
 def test_export_mbf_to_vtk(zinc):
