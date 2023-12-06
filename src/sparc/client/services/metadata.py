@@ -131,7 +131,7 @@ class MetadataService(ServiceBase):
 
         url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
-        success = 1
+        self.es_success = 1
 
         try:
             if headers == "NONE":
@@ -146,20 +146,20 @@ class MetadataService(ServiceBase):
 
         except requests.exceptions.HTTPError as errh:
             logging.error("Retrieving URL - HTTP Error:", errh)
-            success = 0
+            self.es_success = 0
         except requests.exceptions.ConnectionError as errc:
             logging.error("Retrieving URL - Error Connecting:", errc)
-            success = 0
+            self.es_success = 0
         except requests.exceptions.Timeout as errt:
             logging.error("Retrieving URL - Timeout Error:", errt)
-            success = 0
+            self.es_success = 0
         except requests.exceptions.RequestException as err:
             logging.error("Retrieving URL - Something Else", err)
-            success = 0
+            self.es_success = 0
 
         url_session.close()
 
-        if success == 1:
+        if self.es_success == 1:
             result = url_result
         else:
             result = {}
@@ -186,7 +186,7 @@ class MetadataService(ServiceBase):
         except:
             logging.error("Elasticsearch query body can not be read")
 
-        success = 1
+        self.es_success = 1
 
         try:
             if headers == "NONE":
@@ -201,20 +201,20 @@ class MetadataService(ServiceBase):
 
         except requests.exceptions.HTTPError as errh:
             logging.error("Retrieving URL - HTTP Error:", errh)
-            success = 0
+            self.es_success = 0
         except requests.exceptions.ConnectionError as errc:
             logging.error("Retrieving URL - Error Connecting:", errc)
-            success = 0
+            self.es_success = 0
         except requests.exceptions.Timeout as errt:
             logging.error("Retrieving URL - Timeout Error:", errt)
-            success = 0
+            self.es_success = 0
         except requests.exceptions.RequestException as err:
             logging.error("Retrieving URL - Something Else", err)
-            success = 0
+            self.es_success = 0
 
         url_session.close()
 
-        if success == 1:
+        if self.es_success == 1:
             result = url_result
         else:
             result = {}
