@@ -63,6 +63,9 @@ class MetadataService(ServiceBase):
         logging.info("Initializing SPARC K-Core Elasticsearch services...")
         logging.debug(str(config))
 
+        self.host_api = "https://scicrunch.org/api/1/elastic"
+        self.algolia_api = "https://scicrunch.org/api/1/elastic/SPARC_Algolia_pr/_search"
+
         if config is not None:
             self.scicrunch_api_key = config.get("scicrunch_api_key")
             logging.info("SciCrunch API Key: Found")
@@ -78,13 +81,11 @@ class MetadataService(ServiceBase):
         """Not needed as metadata services are REST service calls"""
         logging.info("Metadata REST services available...")
 
-        self.host_api = "https://scicrunch.org/api/1/elastic"
         return self.host_api
 
     def info(self) -> str:
         """Returns information about the metadata search services."""
 
-        self.host_api = "https://scicrunch.org/api/1/elastic"
         return self.host_api
 
     def get_profile(self) -> str:
@@ -238,10 +239,9 @@ class MetadataService(ServiceBase):
         A json with the results.
 
         """
-        self.host_api = "https://scicrunch.org/api/1/elastic/SPARC_Algolia_pr/_search"
 
         list_url = (
-            self.host_api
+            self.algolia_api
             + "?"
             + "from="
             + str(offset)
@@ -270,9 +270,8 @@ class MetadataService(ServiceBase):
 
         """
 
-        self.host_api = "https://scicrunch.org/api/1/elastic/SPARC_Algolia_pr/_search"
 
-        list_url = self.host_api + "?" + "key=" + self.scicrunch_api_key
+        list_url = self.algolia_api + "?" + "key=" + self.scicrunch_api_key
 
         list_results = self.postURL(list_url, body=query, headers=self.default_headers)
         return list_results
