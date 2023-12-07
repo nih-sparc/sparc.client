@@ -2,8 +2,8 @@ import json
 import os
 import re
 
-from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
 from cmlibs.exporter.stl import ArgonSceneExporter as STLExporter
+from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
 from cmlibs.utils.zinc.field import get_group_list, field_exists
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK
@@ -171,7 +171,7 @@ class ZincHelper:
             field_iterator = fm.createFielditerator()
             field = field_iterator.next()
             while field.isValid() and not coordinates.isValid():
-                if field_exists(fm, field.getName(), 'FiniteElement', 3):
+                if field_exists(fm, field.getName(), "FiniteElement", 3):
                     coordinates = field
 
                 field = field_iterator.next()

@@ -76,9 +76,7 @@ def _mock_get_scaffold(self, dataset_id):
 
 def test_export_scaffold_into_stl_format_non_default_coordinates(zinc):
     # create a temporary output file
-    output_location = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "resources/")
-    )
+    output_location = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
 
     zinc._get_scaffold = _mock_get_scaffold.__get__(zinc)
 
