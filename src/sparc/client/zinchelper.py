@@ -4,7 +4,7 @@ import re
 
 from cmlibs.exporter.stl import ArgonSceneExporter as STLExporter
 from cmlibs.exporter.vtk import ArgonSceneExporter as VTKExporter
-from cmlibs.utils.zinc.field import get_group_list, field_exists
+from cmlibs.utils.zinc.field import field_exists, get_group_list
 from cmlibs.zinc.context import Context
 from cmlibs.zinc.result import RESULT_OK
 from mbfxml2ex.app import read_xml
