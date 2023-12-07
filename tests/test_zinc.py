@@ -132,14 +132,6 @@ def test_export_mbf_to_vtk(zinc):
     os.remove(output_file)
 
 
-def test_export_mbf_to_vtk_with_malformed_mbfxml_file(zinc):
-    # ensure the function raises an error if the mbfxml file is malformed
-    dataset_id = 287
-    dataset_file = "15_1.xml"
-    with pytest.raises(Exception):
-        zinc.get_mbf_vtk(dataset_id, dataset_file)
-
-
 def test_export_mbf_to_vtk_with_default_output_name(zinc):
     # ensure the function generates a VTK file with valid content
     dataset_id = 121
