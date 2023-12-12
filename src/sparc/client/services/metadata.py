@@ -52,8 +52,6 @@ class MetadataService(ServiceBase):
         "Accept": "application/json; charset=utf-8",
     }
 
-    host_api = "https://scicrunch.org/api/1/elastic"
-
     scicrunch_api_key: str = None
     profile_name: str = None
 
@@ -123,103 +121,99 @@ class MetadataService(ServiceBase):
     # Function to GET content from URL with retries
     def getURL(self, url, headers="NONE"):
         result = "[ERROR]"
-        url_session = requests.Session()
+        
+        with requests.Session() as url_session:  
 
-        retries = Retry(
-            total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
-        )
+            retries = Retry(
+                total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
+            )
 
-        url_session.mount("https://", HTTPAdapter(max_retries=retries))
+            url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
-        self.es_success = 1
+            self.es_success = 1
 
-        try:
-            if headers == "NONE":
-                url_result = url_session.get(url)
-            else:
-                url_result = url_session.get(url, headers=headers)
+            try:
+                if headers == "NONE":
+                    url_result = url_session.get(url)
+                else:
+                    url_result = url_session.get(url, headers=headers)
 
-            if url_result.status_code == 410:
-                logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
-            else:
-                url_result.raise_for_status()
+                if url_result.status_code == 410:
+                    logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
+                else:
+                    url_result.raise_for_status()
 
-        except requests.exceptions.HTTPError as errh:
-            logging.error("Retrieving URL - HTTP Error:", errh)
-            self.es_success = 0
-        except requests.exceptions.ConnectionError as errc:
-            logging.error("Retrieving URL - Error Connecting:", errc)
-            self.es_success = 0
-        except requests.exceptions.Timeout as errt:
-            logging.error("Retrieving URL - Timeout Error:", errt)
-            self.es_success = 0
-        except requests.exceptions.RequestException as err:
-            logging.error("Retrieving URL - Something Else", err)
-            self.es_success = 0
+            except requests.exceptions.HTTPError as errh:
+                logging.error("Retrieving URL - HTTP Error:", errh)
+                self.es_success = 0
+            except requests.exceptions.ConnectionError as errc:
+                logging.error("Retrieving URL - Error Connecting:", errc)
+                self.es_success = 0
+            except requests.exceptions.Timeout as errt:
+                logging.error("Retrieving URL - Timeout Error:", errt)
+                self.es_success = 0
+            except requests.exceptions.RequestException as err:
+                logging.error("Retrieving URL - Something Else", err)
+                self.es_success = 0
 
-        url_session.close()
+            url_session.close()
 
-        if self.es_success == 1:
-            result = url_result
-        else:
-            result = {}
+            result = url_result if self.es_success == 1 else {}
 
-        return result.json()
+            return result.json()
 
     #####################################################################
     # Function to retrieve content via POST from URL with retries
     def postURL(self, url, body, headers="NONE"):
         result = "[ERROR]"
-        url_session = requests.Session()
 
-        retries = Retry(
-            total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
-        )
+        with requests.Session() as url_session:  
 
-        url_session.mount("https://", HTTPAdapter(max_retries=retries))
+            retries = Retry(
+                total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
+            )
 
-        try:
-            if type(body) is dict:
-                body_json = body
-            else:
-                body_json = json.loads(body)
-        except:
-            logging.error("Elasticsearch query body can not be read")
+            url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
-        self.es_success = 1
+            try:
+                if type(body) is dict:
+                    body_json = body
+                else:
+                    body_json = json.loads(body)
+            except:
+                logging.error("Elasticsearch query body can not be read")
 
-        try:
-            if headers == "NONE":
-                url_result = url_session.post(url, json=body_json)
-            else:
-                url_result = url_session.post(url, json=body_json, headers=headers)
+            self.es_success = 1
 
-            if url_result.status_code == 410:
-                logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
-            else:
-                url_result.raise_for_status()
+            try:
+                if headers == "NONE":
+                    url_result = url_session.post(url, json=body_json)
+                else:
+                    url_result = url_session.post(url, json=body_json, headers=headers)
 
-        except requests.exceptions.HTTPError as errh:
-            logging.error("Retrieving URL - HTTP Error:", errh)
-            self.es_success = 0
-        except requests.exceptions.ConnectionError as errc:
-            logging.error("Retrieving URL - Error Connecting:", errc)
-            self.es_success = 0
-        except requests.exceptions.Timeout as errt:
-            logging.error("Retrieving URL - Timeout Error:", errt)
-            self.es_success = 0
-        except requests.exceptions.RequestException as err:
-            logging.error("Retrieving URL - Something Else", err)
-            self.es_success = 0
+                if url_result.status_code == 410:
+                    logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
+                else:
+                    url_result.raise_for_status()
 
-        url_session.close()
+            except requests.exceptions.HTTPError as errh:
+                logging.error("Retrieving URL - HTTP Error:", errh)
+                self.es_success = 0
+            except requests.exceptions.ConnectionError as errc:
+                logging.error("Retrieving URL - Error Connecting:", errc)
+                self.es_success = 0
+            except requests.exceptions.Timeout as errt:
+                logging.error("Retrieving URL - Timeout Error:", errt)
+                self.es_success = 0
+            except requests.exceptions.RequestException as err:
+                logging.error("Retrieving URL - Something Else", err)
+                self.es_success = 0
 
-        if self.es_success == 1:
-            result = url_result
-        else:
-            result = {}
+            url_session.close()
 
-        return result.json()
+            result = url_result if self.es_success == 1 else {}
+
+            return result.json()
 
     #####################################################################
     # Metadata Search Functions
