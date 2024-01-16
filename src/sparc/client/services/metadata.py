@@ -121,11 +121,12 @@ class MetadataService(ServiceBase):
     # Function to GET content from URL with retries
     def getURL(self, url, headers="NONE"):
         result = "[ERROR]"
-        
-        with requests.Session() as url_session:  
 
+        with requests.Session() as url_session:
             retries = Retry(
-                total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
+                total=6,
+                backoff_factor=1,
+                status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504],
             )
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
@@ -156,21 +157,20 @@ class MetadataService(ServiceBase):
                 logging.error("Retrieving URL - Something Else", err)
                 self.es_success = 0
 
-            url_session.close()
+            result = url_result.json() if self.es_success == 1 else {}
 
-            result = url_result if self.es_success == 1 else {}
-
-            return result.json()
+            return result
 
     #####################################################################
     # Function to retrieve content via POST from URL with retries
     def postURL(self, url, body, headers="NONE"):
         result = "[ERROR]"
 
-        with requests.Session() as url_session:  
-
+        with requests.Session() as url_session:
             retries = Retry(
-                total=6, backoff_factor=1, status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504]
+                total=6,
+                backoff_factor=1,
+                status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504],
             )
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
@@ -209,11 +209,9 @@ class MetadataService(ServiceBase):
                 logging.error("Retrieving URL - Something Else", err)
                 self.es_success = 0
 
-            url_session.close()
+            result = url_result.json() if self.es_success == 1 else {}
 
-            result = url_result if self.es_success == 1 else {}
-
-            return result.json()
+            return result
 
     #####################################################################
     # Metadata Search Functions
@@ -263,7 +261,6 @@ class MetadataService(ServiceBase):
         A json with the results.
 
         """
-
 
         list_url = self.algolia_api + "?" + "key=" + self.scicrunch_api_key
 
