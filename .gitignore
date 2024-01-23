@@ -27,7 +27,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# dynamic versioning of version
+# dynamic versioning in _version.py (automatically built for PyPI only)
 src/sparc/client/_version.py
 
 # PyInstaller
