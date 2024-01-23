@@ -1,6 +1,6 @@
 [project]
 name = "sparc.client"
-version = "0.2.0"
+dynamic = ["version"]
 description = "NIH SPARC Python Client"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -46,13 +46,11 @@ test = [
   "responses",
 ]
 
-
 [project.urls]
 homepage = "https://sparc.science"
-documentation = "https://github.com/nih-sparc/sparc.client/README.md"
+documentation = "https://github.com/nih-sparc/sparc.client/blob/main/README.md"
 repository = "https://github.com/nih-sparc/sparc.client"
-changelog = "https://github.com/nih-sparc/sparc.client/CHANGELOG.md"
-
+changelog = "https://github.com/nih-sparc/sparc.client/blob/main/CHANGELOG.md"
 
 [tool.black]
 line-length = 99
@@ -79,8 +77,11 @@ where = ["src", "config"]
 "*" = ["*.ini", "*.txt"]
 
 [build-system]
-requires = ["setuptools", "pennsieve2", "cmlibs.zinc", "cmlibs.utils", "scaffoldmaker", "mbfxml2ex"]
+requires = ["setuptools>=64", "setuptools-scm>=8.0", "pennsieve2", "cmlibs.zinc", "cmlibs.utils", "scaffoldmaker", "mbfxml2ex"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_file = "src/sparc/client/_version.py"
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
