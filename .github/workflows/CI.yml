@@ -1,19 +1,23 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: CI 
+name: CI
 
 on:
-  [push]
-  
+  push:
+    tags:
+      - 'v*'  # Execute if version is tagged
+    branches:
+      - main  # Or if it is push to main
+  pull_request:  # Or if it is any pull_request
+  workflow_call: # Or if the call comes from another workflow (reusability)
+
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
@@ -36,21 +40,19 @@ jobs:
     - name: Generate coverage report
       run: |
         PYTHONPATH=src
-        pytest --cov=./src tests/
+        pytest --cov=./src tests/ --cov-report term --cov-report=xml:coverage.xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         verbose: true
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
-    - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
+        directory: ./coverage/reports/
+        env_vars: OS,PYTHON
+        fail_ci_if_error: true
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+#        token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Check if the package builds
+      run: |
+        python -m pip install -U pip build
+        python -m build
