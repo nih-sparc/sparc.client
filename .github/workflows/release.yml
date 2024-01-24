@@ -25,7 +25,7 @@ jobs:
   check:
     needs: verify
     uses: ./.github/workflows/CI.yml
-#    if: steps.checkUser.outputs.check-result == 'true'
+
   publish:
     needs: check
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/sparc.client
     permissions:
-#      # IMPORTANT: this permission is mandatory for trusted publishing on PyPI
+      # IMPORTANT: this permission is mandatory for trusted publishing on PyPI
       id-token: write
       contents: write
       packages: write
@@ -82,19 +82,8 @@ jobs:
           python -m pip install -U pip build
           python -m build
 
-#      - name: Publish Distribution to TestPyPI
-#        uses: pypa/gh-action-pypi-publish@v1.5.0
-#        with:
-#          user: __token__
-#          password: ${{ secrets.TEST_PYPI_TOKEN }}
-#          repository_url: https://test.pypi.org/legacy/
-#          skip_existing: true
-
       - name: Publish Distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-#        with: #not needed with new PyPI publishing
-#          user: __token__
-#          password: ${{ secrets.PYPI_TOKEN }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
