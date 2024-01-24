@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main  # Run if it is a push to main
-  pull_request:
-    branches:
-      - main  # Or if it is a pull request to main
 
 jobs:
   check:
