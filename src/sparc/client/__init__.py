@@ -1,5 +1,5 @@
-from .client import SparcClient
 from ._version import __version__
+from .client import SparcClient
 
 __all__: tuple[str, ...] = [
     "SparcClient",

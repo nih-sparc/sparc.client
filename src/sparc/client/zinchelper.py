@@ -19,8 +19,7 @@ from scaffoldmaker.annotation.heart_terms import get_heart_term
 from scaffoldmaker.annotation.lung_terms import get_lung_term
 from scaffoldmaker.annotation.muscle_terms import get_muscle_term
 from scaffoldmaker.annotation.nerve_terms import get_nerve_term
-from scaffoldmaker.annotation.smallintestine_terms import \
-    get_smallintestine_term
+from scaffoldmaker.annotation.smallintestine_terms import get_smallintestine_term
 from scaffoldmaker.annotation.stellate_terms import get_stellate_term
 from scaffoldmaker.annotation.stomach_terms import get_stomach_term
 from scaffoldmaker.utils.exportvtk import ExportVtk
