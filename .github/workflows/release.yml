@@ -1,0 +1,97 @@
+# Build the package, release new version and publish it to PyPI after tests pass
+# References:
+# - https://discourse.jupyter.org/t/use-github-workflows-to-automatically-publish-to-pypi-when-new-tags-are-created/14941/2
+# - https://dev.to/this-is-learning/manually-trigger-a-github-action-with-workflowdispatch-3mga
+# - https://maciek.land/blog/automatic-releases-with-github-actions
+# - https://www.loopwerk.io/articles/2021/automating-changelog/
+
+
+name: Release new version
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Please specify version, e.g.: v0.3.5"
+        default: "v0.0.0"
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check permissions
+        uses: actions-cool/check-user-permission@v2
+        id: checkUser
+        with:
+          require: 'admin'
+  check:
+    needs: verify
+    uses: ./.github/workflows/CI.yml
+
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+
+    # Specifying a GitHub environment for PyPI release is optional, but strongly encouraged
+    environment: 
+      name: pypi
+      url: https://pypi.org/p/sparc.client
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing on PyPI
+      id-token: write
+      contents: write
+      packages: write
+    steps:
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git user
+        run: |
+          git config user.email "actions-bot@github.com"
+          git config user.name "GitHub Actions (run by ${{ github.actor }})"
+
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.2
+        with:
+          repo-token: ${{ github.token }}
+          tag: ${{ github.event.inputs.version }}
+
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.event.inputs.version }}
+
+      - name: Commit and push CHANGELOG.md
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: CHANGELOG.md
+          message: "chore: Update CHANGELOG.md"
+          pull: '--rebase --autostash'
+          tag: '-a ${{ github.event.inputs.version }} -m ${{ github.event.inputs.version }} --force'
+          tag_push: '--force'
+
+      - name: Build package
+        run: |
+          python -m pip install -U pip build
+          python -m build
+
+      - name: Publish Distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          name: ${{ github.event.inputs.version }}
+          tag: ${{ github.event.inputs.version }}
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ github.token }}

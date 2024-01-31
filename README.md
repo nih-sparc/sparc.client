@@ -94,3 +94,48 @@ Run `pip install -e '.[test]'` to install the dependencies needed for a developm
 Run `pytest --cov=./src` to run the tests and get a test coverage summary.
 
 Run `pytest --cov-report html --cov=./src` to run the tests and get a full HTML coverage report output to `htmlcov`.
+
+Run `python -m build` to check if your package builds successfully.
+
+
+The process is currently automated using Github Action in CI.yml.
+
+
+# Software releasing guidelines
+
+The process of releasing new version of the software is fully automated.
+
+This means that `CHANGELOG.md` as well as release commands are automatically generated.
+
+The versioning is fully dynamic using git tags.
+
+Please also note that there is no package/software version pyproject.toml. We use dynamic versioning provided by setuptools_scm
+
+
+Also file sparc.client/_version.py should not be committed to the repository.
+
+
+
+## How commits should look like?
+
+We are using [Semantic Commit Messages](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) for commits. 
+
+Basically this means that important commits should start with one of the following prefixes: *chore:*, *docs:*, *feat:*, *fix:*, *refactor:*, *style:*, or *test:*.
+
+Additionally, we ask to refer to the issue number on Github (by adding a reference, e.g. `#24234`)
+[Refer to issues](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls)
+
+
+## Releasing a new version
+
+
+1. In order to release a new version, an action 'Create new release' needs to be launched from Github Actions menu. 
+Please navigate to 'Actions' and click 'Create new release' on the left hand side. On the right hand side, you can click 'Run workflow'
+
+2. After launching a workflow, specify manually a version. The version needs to start with 'v', e.g. 'v0.0.34'.
+
+3. Launching a workflow checks for the user permission (needs to be admin to the repository) and runs CI in order to verify integrity of the software.
+
+4. If the CI/CD test passes, a temporary tag is created. The commits which follow the symantic versioning naming convention are then used to create and update CHANGELOG.md.
+
+5. Once CHANGELOG.md is pushed to the main branch, the new version is tagged again and the software is released to Github and to PyPI.
