@@ -61,8 +61,8 @@ class MetadataService(ServiceBase):
         logging.info("Initializing SPARC K-Core Elasticsearch services...")
         logging.debug(str(config))
 
-        self.host_api = "https://scicrunch.org/api/1/elastic"
-        self.algolia_api = "https://scicrunch.org/api/1/elastic/SPARC_Algolia_pr/_search"
+        self.host_api = "https://api.scicrunch.io/elastic/v1"
+        self.algolia_api = "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search"
 
         if config is not None:
             self.scicrunch_api_key = config.get("scicrunch_api_key")
@@ -231,19 +231,24 @@ class MetadataService(ServiceBase):
         A json with the results.
 
         """
+        
+        request_headers = self.default_headers
+        request_headers["apikey"] = self.scicrunch_api_key
 
-        list_url = (
-            self.algolia_api
-            + "?"
-            + "from="
-            + str(offset)
-            + "&size="
-            + str(limit)
-            + "&key="
-            + self.scicrunch_api_key
-        )
+        if "pennsieve" in self.algolia_api:
+        # For testing purposes to use non API key based service
+            list_url = self.algolia_api
+        else: 
+            list_url = (
+                self.algolia_api
+                + "?"
+                + "from="
+                + str(offset)
+                + "&size="
+                + str(limit)
+            )
 
-        list_results = self.getURL(list_url, headers=self.default_headers)
+        list_results = self.getURL(list_url, headers=request_headers)
         return list_results
 
     def search_datasets(self, query: str = '{"query": { "match_all": {}}}') -> list:
@@ -261,8 +266,9 @@ class MetadataService(ServiceBase):
         A json with the results.
 
         """
+        
+        request_headers = self.default_headers
+        request_headers["apikey"] = self.scicrunch_api_key
 
-        list_url = self.algolia_api + "?" + "key=" + self.scicrunch_api_key
-
-        list_results = self.postURL(list_url, body=query, headers=self.default_headers)
+        list_results = self.postURL(self.algolia_api, body=query, headers=request_headers)
         return list_results
