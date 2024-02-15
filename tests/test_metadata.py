@@ -1,10 +1,18 @@
 import json
+import os
 
 from sparc.client import SparcClient
 
 import pytest
 
-client = SparcClient(connect=False, config_file='../config/config.ini')
+
+test_dir = os.path.dirname(__file__)
+config_dir = os.path.join(test_dir, "resources")
+config_file = os.path.join(config_dir, "config.ini")
+
+
+client = SparcClient(connect=False, config_file = config_file)
+
 
 # Test connect and initialization
 def test_metadata_connect():
