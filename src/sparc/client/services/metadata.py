@@ -69,7 +69,7 @@ class MetadataService(ServiceBase):
             logging.info("SciCrunch API Key: Found")
             self.profile_name = config.get("pennsieve_profile_name")
             logging.info("Profile: " + self.profile_name)
-        
+
         if self.scicrunch_api_key == None:
             logging.error("SciCrunch API Key: Not Found")
 
@@ -222,6 +222,6 @@ class MetadataService(ServiceBase):
         if "api.scicrunch.io" in self.algolia_api:
             # If user hasn't changed URL add ES specific information
             request_headers["apikey"] = self.scicrunch_api_key
-            
+
         search_results = self.postURL(self.algolia_api, body=query, headers=request_headers)
         return search_results
