@@ -131,24 +131,14 @@ class MetadataService(ServiceBase):
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
-            self.es_success = 1
+            if headers == "NONE":
+                url_result = url_session.get(url)
+            else:
+                url_result = url_session.get(url, headers=headers)
 
-            try:
-                if headers == "NONE":
-                    url_result = url_session.get(url)
-                else:
-                    url_result = url_session.get(url, headers=headers)
+            logging.info("HTTP " + str(url_result.status_code) + ":" + url)
 
-                logging.info("HTTP " + str(url_result.status_code) + ":" + url)
-
-            except requests.exceptions.HTTPError as errh:
-                logging.error("Retrieving URL - HTTP Error")
-                logging.error(errh.args[0])
-                self.es_success = 0
-
-            result = url_result.json() if self.es_success == 1 else {}
-
-            return result
+            return url_result.json()
 
     #####################################################################
     # Function to retrieve content via POST from URL with retries
@@ -163,7 +153,6 @@ class MetadataService(ServiceBase):
             )
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
-            self.es_success = 1
 
             if type(body) is dict:
                 body_json = body
@@ -174,22 +163,14 @@ class MetadataService(ServiceBase):
                 result["message"] = "Bad JSON body - not a proper query string"
                 return result
 
-            try:
-                if headers == "NONE":
-                    url_result = url_session.post(url, json=body_json)
-                else:
-                    url_result = url_session.post(url, json=body_json, headers=headers)
+            if headers == "NONE":
+                url_result = url_session.post(url, json=body_json)
+            else:
+                url_result = url_session.post(url, json=body_json, headers=headers)
 
-                logging.info("HTTP " + str(url_result.status_code) + ":" + url)
+            logging.info("HTTP " + str(url_result.status_code) + ":" + url)
 
-            except requests.exceptions.HTTPError as errh:
-                logging.error("Retrieving URL - HTTP Error")
-                logging.error(errh.args[0])
-                self.es_success = 0
-
-            result = url_result.json() if self.es_success == 1 else {}
-
-            return result
+            return url_result.json()
 
     #####################################################################
     # Metadata Search Functions

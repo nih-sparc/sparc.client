@@ -119,7 +119,7 @@ def test_metadata_post_noheader():
     post_result = client.metadata.postURL(
         "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", body_json, headers="NONE"
     )
-
+    print(str(post_result))
     if post_result["status"] >= 400:
         assert 1
     else:
