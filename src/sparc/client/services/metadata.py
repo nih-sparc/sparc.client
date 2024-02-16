@@ -69,11 +69,9 @@ class MetadataService(ServiceBase):
             logging.info("SciCrunch API Key: Found")
             self.profile_name = config.get("pennsieve_profile_name")
             logging.info("Profile: " + self.profile_name)
-        else:
-            logging.warning("SciCrunch API Key: Not Found")
-            logging.info("Profile: none")
-        if connect:
-            self.connect()
+        
+        if self.scicrunch_api_key == None:
+            logging.error("SciCrunch API Key: Not Found")
 
     def connect(self) -> str:
         """Not needed as metadata services are REST service calls"""
@@ -192,13 +190,13 @@ class MetadataService(ServiceBase):
         """
 
         request_headers = self.default_headers
-        request_headers["apikey"] = self.scicrunch_api_key
 
-        if "pennsieve" in self.algolia_api:
-            # For testing purposes to use non API key based service
+        if "api.scicrunch.io" not in self.algolia_api:
+            # If user changes URL don't add ES specific information
             list_url = self.algolia_api
         else:
             list_url = self.algolia_api + "?" + "from=" + str(offset) + "&size=" + str(limit)
+            request_headers["apikey"] = self.scicrunch_api_key
 
         list_results = self.getURL(list_url, headers=request_headers)
         return list_results
@@ -220,7 +218,10 @@ class MetadataService(ServiceBase):
         """
 
         request_headers = self.default_headers
-        request_headers["apikey"] = self.scicrunch_api_key
 
+        if "api.scicrunch.io" in self.algolia_api:
+            # If user hasn't changed URL add ES specific information
+            request_headers["apikey"] = self.scicrunch_api_key
+            
         search_results = self.postURL(self.algolia_api, body=query, headers=request_headers)
         return search_results

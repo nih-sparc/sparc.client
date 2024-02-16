@@ -9,9 +9,17 @@ test_dir = os.path.dirname(__file__)
 config_dir = os.path.join(test_dir, "resources")
 config_file = os.path.join(config_dir, "config.ini")
 
+# Test client initialization
+def test_metadata_connect_false():
 
+    client = SparcClient(connect=False, config_file=config_file)
+    
+    response = client.metadata.info()
+    client.metadata.close()
+    assert response == "https://api.scicrunch.io/elastic/v1"
+
+# Setup client for rest of tests
 client = SparcClient(connect=False, config_file=config_file)
-
 
 # Test connect and initialization
 def test_metadata_connect():
