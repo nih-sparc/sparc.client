@@ -160,7 +160,7 @@ class MetadataService(ServiceBase):
     # Function to retrieve content via POST from URL with retries
     def postURL(self, url, body, headers="NONE"):
         result = {}
-        
+
         with requests.Session() as url_session:
             retries = Retry(
                 total=6,
@@ -179,13 +179,13 @@ class MetadataService(ServiceBase):
                 logging.error("Elasticsearch query body can not be read")
 
             self.es_success = 1
-            
+
             try:
                 if headers == "NONE":
                     url_result = url_session.post(url, json=body_json)
                 else:
                     url_result = url_session.post(url, json=body_json, headers=headers)
-            
+
             except requests.exceptions.HTTPError as errh:
                 logging.error("Retrieving URL - HTTP Error")
                 self.es_success = 0
@@ -198,7 +198,7 @@ class MetadataService(ServiceBase):
             except requests.exceptions.RequestException as err:
                 logging.error("Retrieving URL - Something Else")
                 self.es_success = 0
-            
+
             result = url_result.json() if self.es_success == 1 else {}
 
             return result
@@ -221,22 +221,15 @@ class MetadataService(ServiceBase):
         A json with the results.
 
         """
-        
+
         request_headers = self.default_headers
         request_headers["apikey"] = self.scicrunch_api_key
 
         if "pennsieve" in self.algolia_api:
-        # For testing purposes to use non API key based service
+            # For testing purposes to use non API key based service
             list_url = self.algolia_api
-        else: 
-            list_url = (
-                self.algolia_api
-                + "?"
-                + "from="
-                + str(offset)
-                + "&size="
-                + str(limit)
-            )
+        else:
+            list_url = self.algolia_api + "?" + "from=" + str(offset) + "&size=" + str(limit)
 
         list_results = self.getURL(list_url, headers=request_headers)
         return list_results
@@ -260,5 +253,5 @@ class MetadataService(ServiceBase):
         request_headers = self.default_headers
         request_headers["apikey"] = self.scicrunch_api_key
 
-        list_results = self.postURL(self.algolia_api, body=query, headers=request_headers)
-        return list_results
+        search_results = self.postURL(self.algolia_api, body=query, headers=request_headers)
+        return search_results
