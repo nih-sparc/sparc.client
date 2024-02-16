@@ -27,6 +27,19 @@ def test_metadata_info():
     assert response == "https://api.scicrunch.io/elastic/v1"
 
 
+# Test list datasets with no API key
+def test_metadata_search_datasets_nokey():
+    response = {}
+
+    response = client.metadata.list_datasets()
+    print("No Header: " + str(response) + " :End")
+
+    if response["status"] >= 400:
+        assert 1
+    else:
+        assert 0
+
+
 # Test list datasets utilizing alternate non-api key endpoint
 def test_metadata_list_datasets():
     response = {}
@@ -35,18 +48,6 @@ def test_metadata_list_datasets():
     response = client.metadata.list_datasets()
 
     assert response["totalCount"] > 0
-
-
-# Test list datasets with no API key
-def test_metadata_search_datasets_nokey():
-    response = {}
-
-    response = client.metadata.list_datasets()
-
-    if bool(response):
-        assert 1
-    else:
-        assert 0
 
 
 # Test search with query string utilizing alternate non-api key endpoint
@@ -83,7 +84,7 @@ def test_metadata_list_datasets_badurl():
     client.metadata.algolia_api = "https://api.scicrunch.io/elastic/v0"
     response = client.metadata.list_datasets()
 
-    if bool(response):
+    if response["status"] >= 400:
         assert 1
     else:
         assert 0
@@ -98,19 +99,13 @@ def test_metadata_api_key():
     assert get_result == "Test Key"
 
 
-# Test close
-def test_metadata_close():
-    close_result = client.metadata.close()
-    assert close_result == "https://api.scicrunch.io/elastic/v1"
-
-
 # Test get URL with no headers
 def test_metadata_get_noheader():
     get_result = client.metadata.getURL(
         "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", headers="NONE"
     )
 
-    if bool(get_result):
+    if get_result["status"] >= 400:
         assert 1
     else:
         assert 0
@@ -125,7 +120,26 @@ def test_metadata_post_noheader():
         "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", body_json, headers="NONE"
     )
 
-    if bool(post_result):
+    if post_result["status"] >= 400:
         assert 1
     else:
         assert 0
+
+
+# Test search with malformed query
+def test_metadata_search_badbody():
+    query_string = 1
+    response = {}
+
+    response = client.metadata.search_datasets(query_string)
+
+    if response["status"] >= 400:
+        assert 1
+    else:
+        assert 0
+
+
+# Test close
+def test_metadata_close():
+    close_result = client.metadata.close()
+    assert close_result == "https://api.scicrunch.io/elastic/v1"

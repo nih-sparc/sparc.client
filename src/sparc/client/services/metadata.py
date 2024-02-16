@@ -139,17 +139,11 @@ class MetadataService(ServiceBase):
                 else:
                     url_result = url_session.get(url, headers=headers)
 
+                logging.info("HTTP " + str(url_result.status_code) + ":" + url)
+
             except requests.exceptions.HTTPError as errh:
                 logging.error("Retrieving URL - HTTP Error")
-                self.es_success = 0
-            except requests.exceptions.ConnectionError as errc:
-                logging.error("Retrieving URL - Error Connecting")
-                self.es_success = 0
-            except requests.exceptions.Timeout as errt:
-                logging.error("Retrieving URL - Timeout Error")
-                self.es_success = 0
-            except requests.exceptions.RequestException as err:
-                logging.error("Retrieving URL - Something Else")
+                logging.error(errh.args[0])
                 self.es_success = 0
 
             result = url_result.json() if self.es_success == 1 else {}
@@ -169,16 +163,16 @@ class MetadataService(ServiceBase):
             )
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
-
-            try:
-                if type(body) is dict:
-                    body_json = body
-                else:
-                    body_json = json.loads(body)
-            except:
-                logging.error("Elasticsearch query body can not be read")
-
             self.es_success = 1
+
+            if type(body) is dict:
+                body_json = body
+            elif type(body) is str:
+                body_json = json.loads(body)
+            else:
+                result["status"] = 400
+                result["message"] = "Bad JSON body - not a proper query string"
+                return result
 
             try:
                 if headers == "NONE":
@@ -186,17 +180,11 @@ class MetadataService(ServiceBase):
                 else:
                     url_result = url_session.post(url, json=body_json, headers=headers)
 
+                logging.info("HTTP " + str(url_result.status_code) + ":" + url)
+
             except requests.exceptions.HTTPError as errh:
                 logging.error("Retrieving URL - HTTP Error")
-                self.es_success = 0
-            except requests.exceptions.ConnectionError as errc:
-                logging.error("Retrieving URL - Error Connecting")
-                self.es_success = 0
-            except requests.exceptions.Timeout as errt:
-                logging.error("Retrieving URL - Timeout Error")
-                self.es_success = 0
-            except requests.exceptions.RequestException as err:
-                logging.error("Retrieving URL - Something Else")
+                logging.error(errh.args[0])
                 self.es_success = 0
 
             result = url_result.json() if self.es_success == 1 else {}
