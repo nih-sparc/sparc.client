@@ -120,13 +120,13 @@ class MetadataService(ServiceBase):
     #####################################################################
     # Function to GET content from URL with retries
     def getURL(self, url, headers="NONE"):
-        result = "[ERROR]"
+        result = {}
 
         with requests.Session() as url_session:
             retries = Retry(
                 total=6,
                 backoff_factor=1,
-                status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504],
+                status_forcelist=[404, 413, 429, 500, 502, 503, 504],
             )
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
@@ -139,22 +139,17 @@ class MetadataService(ServiceBase):
                 else:
                     url_result = url_session.get(url, headers=headers)
 
-                if url_result.status_code == 410:
-                    logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
-                else:
-                    url_result.raise_for_status()
-
             except requests.exceptions.HTTPError as errh:
-                logging.error("Retrieving URL - HTTP Error:", errh)
+                logging.error("Retrieving URL - HTTP Error")
                 self.es_success = 0
             except requests.exceptions.ConnectionError as errc:
-                logging.error("Retrieving URL - Error Connecting:", errc)
+                logging.error("Retrieving URL - Error Connecting")
                 self.es_success = 0
             except requests.exceptions.Timeout as errt:
-                logging.error("Retrieving URL - Timeout Error:", errt)
+                logging.error("Retrieving URL - Timeout Error")
                 self.es_success = 0
             except requests.exceptions.RequestException as err:
-                logging.error("Retrieving URL - Something Else", err)
+                logging.error("Retrieving URL - Something Else")
                 self.es_success = 0
 
             result = url_result.json() if self.es_success == 1 else {}
@@ -164,13 +159,13 @@ class MetadataService(ServiceBase):
     #####################################################################
     # Function to retrieve content via POST from URL with retries
     def postURL(self, url, body, headers="NONE"):
-        result = "[ERROR]"
-
+        result = {}
+        
         with requests.Session() as url_session:
             retries = Retry(
                 total=6,
                 backoff_factor=1,
-                status_forcelist=[403, 404, 413, 429, 500, 502, 503, 504],
+                status_forcelist=[404, 413, 429, 500, 502, 503, 504],
             )
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
@@ -184,31 +179,26 @@ class MetadataService(ServiceBase):
                 logging.error("Elasticsearch query body can not be read")
 
             self.es_success = 1
-
+            
             try:
                 if headers == "NONE":
                     url_result = url_session.post(url, json=body_json)
                 else:
                     url_result = url_session.post(url, json=body_json, headers=headers)
-
-                if url_result.status_code == 410:
-                    logging.warning("Retrieval Status 410 - URL Unpublished:" + url)
-                else:
-                    url_result.raise_for_status()
-
+            
             except requests.exceptions.HTTPError as errh:
-                logging.error("Retrieving URL - HTTP Error:", errh)
+                logging.error("Retrieving URL - HTTP Error")
                 self.es_success = 0
             except requests.exceptions.ConnectionError as errc:
-                logging.error("Retrieving URL - Error Connecting:", errc)
+                logging.error("Retrieving URL - Error Connecting")
                 self.es_success = 0
             except requests.exceptions.Timeout as errt:
-                logging.error("Retrieving URL - Timeout Error:", errt)
+                logging.error("Retrieving URL - Timeout Error")
                 self.es_success = 0
             except requests.exceptions.RequestException as err:
-                logging.error("Retrieving URL - Something Else", err)
+                logging.error("Retrieving URL - Something Else")
                 self.es_success = 0
-
+            
             result = url_result.json() if self.es_success == 1 else {}
 
             return result
@@ -266,7 +256,7 @@ class MetadataService(ServiceBase):
         A json with the results.
 
         """
-        
+
         request_headers = self.default_headers
         request_headers["apikey"] = self.scicrunch_api_key
 
