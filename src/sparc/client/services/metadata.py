@@ -1,7 +1,7 @@
 import json
 import logging
 from configparser import SectionProxy
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -70,7 +70,7 @@ class MetadataService(ServiceBase):
             self.profile_name = config.get("pennsieve_profile_name")
             logging.info("Profile: " + self.profile_name)
 
-        if self.scicrunch_api_key == None:
+        if self.scicrunch_api_key is None:
             logging.error("SciCrunch API Key: Not Found")
 
     def connect(self) -> str:
@@ -110,14 +110,14 @@ class MetadataService(ServiceBase):
 
     def close(self) -> None:
         """Not needed as metadata services are REST service calls"""
-        return self.host_api
+        return None
 
     #####################################################################
     # Supporting Functions
 
     #####################################################################
     # Function to GET content from URL with retries
-    def getURL(self, url, headers="NONE"):
+    def getURL(self, url, headers=None):
         result = {}
 
         with requests.Session() as url_session:
@@ -129,7 +129,7 @@ class MetadataService(ServiceBase):
 
             url_session.mount("https://", HTTPAdapter(max_retries=retries))
 
-            if headers == "NONE":
+            if headers is None:
                 url_result = url_session.get(url)
             else:
                 url_result = url_session.get(url, headers=headers)
@@ -140,7 +140,7 @@ class MetadataService(ServiceBase):
 
     #####################################################################
     # Function to retrieve content via POST from URL with retries
-    def postURL(self, url, body, headers="NONE"):
+    def postURL(self, url, body, headers=None):
         result = {}
 
         with requests.Session() as url_session:
@@ -161,10 +161,11 @@ class MetadataService(ServiceBase):
                 result["message"] = "Bad JSON body - not a proper query string"
                 return result
 
-            if headers == "NONE":
-                url_result = url_session.post(url, json=body_json)
-            else:
-                url_result = url_session.post(url, json=body_json, headers=headers)
+            request_headers = self.default_headers if headers is None else headers
+            if self.scicrunch_api_key is not None:
+                request_headers["apikey"] = self.scicrunch_api_key
+
+            url_result = url_session.post(url, json=body_json, headers=request_headers)
 
             logging.info("HTTP " + str(url_result.status_code) + ":" + url)
 

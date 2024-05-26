@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import logging
 import os
 from configparser import SectionProxy
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, TypeAlias
+from typing import Any, Union
 from zipfile import ZipFile, is_zipfile
 
 import osparc
@@ -11,9 +13,9 @@ from osparc.models.profile import Profile
 
 from ._default import ServiceBase
 
-ConfigDict: TypeAlias = dict[str, Any] | SectionProxy
-UserNameStr: TypeAlias = str
-JobId: TypeAlias = str
+# ConfigDict: TypeAlias = Union[dict[str, Any], SectionProxy]
+# UserNameStr: TypeAlias = str
+# JobId: TypeAlias = str
 
 
 class O2SparcSolver:
@@ -29,7 +31,7 @@ class O2SparcSolver:
         )
         self._jobs: list[osparc.Job] = []
 
-    def submit_job(self, job_inputs: dict[str, str | int | float | Path]) -> JobId:
+    def submit_job(self, job_inputs: dict[str, str | int | float | Path]) -> str:
         """
         Submit a job to the solver/computational service.
 
@@ -59,7 +61,7 @@ class O2SparcSolver:
         self._solvers_api.start_job(self._solver.id, self._solver.version, job.id)
         return job.id
 
-    def get_job_progress(self, job_id: JobId) -> float:
+    def get_job_progress(self, job_id: str) -> float:
         """
         Get the job progress
 
@@ -77,7 +79,7 @@ class O2SparcSolver:
         )
         return float(status.progress / 100)
 
-    def job_done(self, job_id: JobId) -> bool:
+    def job_done(self, job_id: str) -> bool:
         """
         Job done
 
@@ -95,7 +97,7 @@ class O2SparcSolver:
         )
         return not (status.stopped_at is None)
 
-    def get_results(self, job_id: JobId) -> dict[str, Any]:
+    def get_results(self, job_id: str) -> dict[str, Any]:
         """
         Get the results from a job
 
@@ -123,7 +125,7 @@ class O2SparcSolver:
                 results[key] = r
         return results
 
-    def get_job_log(self, job_id: JobId) -> TemporaryDirectory:
+    def get_job_log(self, job_id: str) -> TemporaryDirectory:
         """
         Get the logs from a job
 
@@ -152,7 +154,7 @@ class O2SparcSolver:
 class O2SparcService(ServiceBase):
     """Wraps osparc python client library and fulfills ServiceBase interface"""
 
-    def __init__(self, config: ConfigDict | None = None, connect: bool = True) -> None:
+    def __init__(self, config: dict[str, Any] | SectionProxy | None = None, connect: bool = True) -> None:
         config = config or {}
         logging.info("Initializing o2sparc...")
         logging.debug("%s", f"{config=}")
@@ -187,7 +189,7 @@ class O2SparcService(ServiceBase):
         """Returns the version of osparc client."""
         return self._client.user_agent.split("/")[1]
 
-    def get_profile(self) -> UserNameStr:
+    def get_profile(self) -> str:
         """Returns currently user profile.
 
         Returns:
@@ -198,7 +200,7 @@ class O2SparcService(ServiceBase):
         profile: Profile = users_api.get_my_profile()
         return profile.login
 
-    def set_profile(self, username: str, password: str) -> UserNameStr:
+    def set_profile(self, username: str, password: str) -> str:
         """Changes to a different user profile
 
         Parameters:
