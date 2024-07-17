@@ -33,30 +33,36 @@ class SparcClient:
     -----------
     module_names : list
         Stores the list of modules that are automatically loaded from the <projectbase>/services directory.
+    config : ConfigParser
+        Config used for sparc.client
+
 
     Methods:
     --------
     add_module(path, config, connect):
         Adds and optionally connects to a module in a given path with configuration variables defined in config.
-    connect()
+    connect():
         Connects all the modules by calling their connect() functions.
+    get_config():
+        Returns config used by sparc.client
+
     """
 
     def __init__(self, config_file: str = "config.ini", connect: bool = True) -> None:
 
         # Try to find config file, if not available, provide default
-        config = ConfigParser()
-        config['global'] = {'default_profile' : 'default'}
-        config['default'] = {'pennsieve_profile_name' : 'pennsieve'}
+        self.config = ConfigParser()
+        self.config['global'] = {'default_profile' : 'default'}
+        self.config['default'] = {'pennsieve_profile_name' : 'pennsieve'}
 
         try:
-            config.read(config_file)
+            self.config.read(config_file)
         except Exception as e:
             logging.warning("Configuration file not provided or incorrect, using default settings.")
             pass
 
-        logging.debug(config.sections())
-        current_config = config["global"]["default_profile"]
+        logging.debug(self.config.sections())
+        current_config = self.config["global"]["default_profile"]
 
         logging.debug("Using the following config:" + current_config)
         self.module_names = []
@@ -67,7 +73,7 @@ class SparcClient:
         for _, module_name, _ in iter_modules([package_dir]):
             # import the module and iterate through its attributes
             self.add_module(
-                f"{__package__}.services.{module_name}", config[current_config], connect
+                f"{__package__}.services.{module_name}", self.config[current_config], connect
             )
 
     def add_module(
@@ -121,3 +127,7 @@ class SparcClient:
             if hasattr(module, "connect"):
                 getattr(self, module_name).connect()
         return True
+
+    def get_config(self) -> ConfigParser:
+        """Returns config for sparc.client"""
+        return self.config
