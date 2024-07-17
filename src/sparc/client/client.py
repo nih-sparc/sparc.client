@@ -42,20 +42,23 @@ class SparcClient:
         Connects all the modules by calling their connect() functions.
     """
 
-    def __init__(self, config_file: str = "config/config.ini", connect: bool = True) -> None:
-        # Read config file
-        if not config_file:
-            raise RuntimeError("Configuration file not given")
+    def __init__(self, config_file: str = "config.ini", connect: bool = True) -> None:
 
+        # Try to find config file, if not available, provide default
         config = ConfigParser()
+        config['global'] = {'default_profile' : 'default'}
+        config['default'] = {'pennsieve_profile_name' : 'pennsieve'}
 
-        if os.path.isfile(config_file):
+        try:
             config.read(config_file)
-            logging.debug(str(config))
+        except Exception as e:
+            logging.warning("Configuration file not provided or incorrect, using default settings.")
+            pass
+
+        logging.debug(config.sections())
         current_config = config["global"]["default_profile"]
 
-        logging.debug("Using the following config:")
-        logging.debug(str(config[current_config]))
+        logging.debug("Using the following config:" + current_config)
         self.module_names = []
 
         # iterate through the modules in the current package
