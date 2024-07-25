@@ -48,7 +48,7 @@ test = [
 
 [project.urls]
 homepage = "https://sparc.science"
-documentation = "https://github.com/nih-sparc/sparc.client/blob/main/README.md"
+documentation = "https://docs.sparc.science/docs/sparc-python-client"
 repository = "https://github.com/nih-sparc/sparc.client"
 changelog = "https://github.com/nih-sparc/sparc.client/blob/main/CHANGELOG.md"
 
