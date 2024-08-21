@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [v0.3.1] - 2024-07-25
+### :bug: Bug Fixes
+- [`2ce6b48`](https://github.com/nih-sparc/sparc.client/commit/2ce6b4877aef91aa5e82b77556c1c2bd89a4d3e8) - configuration file incorrect or missing, use default *(commit by [@athril](https://github.com/athril))*
+
+### :white_check_mark: Tests
+- [`c71a2c0`](https://github.com/nih-sparc/sparc.client/commit/c71a2c044bdf987f7032f39ca07b662cb85f54ef) - get_config() and tests for SparcClient *(commit by [@athril](https://github.com/athril))*
+
+### :wrench: Chores
+- [`aaba839`](https://github.com/nih-sparc/sparc.client/commit/aaba8394670c78829704ae94610f90903285c4f8) - fix for codecov workflows [#42](https://github.com/nih-sparc/sparc.client/pull/42) *(commit by [@athril](https://github.com/athril))*
+
+
 ## [v0.3.0] - 2024-03-12
 ### :bug: Bug Fixes
 - [`e4457a1`](https://github.com/nih-sparc/sparc.client/commit/e4457a1e783fdd4bdaad259de5b4e64f271ed20c) - no additional permissions needed, would need to run on vulnerable: pull_request_target *(commit by [@athril](https://github.com/athril))*
@@ -90,3 +101,4 @@ Alpha release of Python Sparc Client.
   * Basic API support (GET/POST)
 
 [v0.3.0]: https://github.com/nih-sparc/sparc.client/compare/v0.2.0...v0.3.0
+[v0.3.1]: https://github.com/nih-sparc/sparc.client/compare/v0.3.0...v0.3.1
