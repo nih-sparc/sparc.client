@@ -18,7 +18,7 @@ def test_config_no_section(test_resources_dir):
         SparcClient(config_file, connect=False)
 
 
-# Config non existing config
+# Config non-existing config
 def test_config_non_existing(config_file=None):
     client = SparcClient(config_file, connect=False)
     c = client.get_config()
