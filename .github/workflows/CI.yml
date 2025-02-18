@@ -10,7 +10,14 @@ on:
     branches:
       - main  # Or if it is push to main
   pull_request:  # Or if it is any pull_request
+    secrets:
+      codecov_token:
+        required: true
   workflow_call: # Or if the call comes from another workflow (reusability)
+    secrets:
+      codecov_token:
+        required: true
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -48,16 +55,15 @@ jobs:
         pytest --cov=./src tests/ --cov-report term --cov-report=xml:coverage.xml
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4.5.0
       with:
         verbose: true
         directory: ./coverage/reports/
-        env_vars: OS,PYTHON
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         files: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.codecov_token }}
 
     - name: Check if the package builds
       run: |
