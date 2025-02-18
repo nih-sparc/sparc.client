@@ -36,6 +36,7 @@ jobs:
         path: 'docs/_build/html'
 
   deploy:
+    if: github.repository == 'nih-sparc/sparc.client'
     # Add a dependency to the build job
     needs: build
 
