@@ -6,10 +6,11 @@
 
 import os
 import sys
+
 _HERE = os.path.dirname(__file__)
 sys.path.insert(0, os.path.abspath(os.path.join(_HERE, '../src')))
 
-import sparc.client
+# import sparc.client
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -23,20 +24,19 @@ release = '0.0.2'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc', # Core library for html generation from docstrings
-    'sphinx.ext.viewcode', # Add links to highlighted source code
-    'sphinx.ext.napoleon', # Support for NumPy and Google style docstrings
-    'sphinx.ext.doctest', # Test snippets in the documentation¶
-    'sphinx.ext.coverage', # Collect doc coverage stats
+    'sphinx.ext.autodoc',  # Core library for html generation from docstrings
+    'sphinx.ext.viewcode',  # Add links to highlighted source code
+    'sphinx.ext.napoleon',  # Support for NumPy and Google style docstrings
+    'sphinx.ext.doctest',  # Test snippets in the documentation¶
+    'sphinx.ext.coverage',  # Collect doc coverage stats
     'sphinx.ext.autosummary',  # Create neat summary tables
-    'sphinx.ext.githubpages', # Creates .nojekyll
-    'sphinx.ext.viewcode', # Add links to highlighted source code
+    'sphinx.ext.githubpages',  # Creates .nojekyll
+    'sphinx.ext.viewcode',  # Add links to highlighted source code
 ]
 
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

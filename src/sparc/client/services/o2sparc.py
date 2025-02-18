@@ -5,7 +5,7 @@ import os
 from configparser import SectionProxy
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Union
+from typing import Any
 from zipfile import ZipFile, is_zipfile
 
 import osparc

@@ -54,14 +54,13 @@ class SparcClient:
 
         # Try to find config file, if not available, provide default
         self.config = ConfigParser()
-        self.config['global'] = {'default_profile' : 'default'}
-        self.config['default'] = {'pennsieve_profile_name' : 'pennsieve'}
+        self.config['global'] = {'default_profile': 'default'}
+        self.config['default'] = {'pennsieve_profile_name': 'pennsieve'}
 
         try:
             self.config.read(config_file)
-        except Exception as e:
+        except Exception:
             logging.warning("Configuration file not provided or incorrect, using default settings.")
-            pass
 
         logging.debug(self.config.sections())
         current_config = self.config["global"]["default_profile"]
@@ -79,10 +78,10 @@ class SparcClient:
             )
 
     def add_module(
-        self,
-        paths: str | list[str],
-        config: dict | SectionProxy | None = None,
-        connect: bool = True,
+            self,
+            paths: str | list[str],
+            config: dict | SectionProxy | None = None,
+            connect: bool = True,
     ) -> None:
         """Adds and optionally connects to a module in a given path with configuration variables defined in config.
 
@@ -105,9 +104,9 @@ class SparcClient:
                 for attribute_name in dir(module):
                     attribute = getattr(module, attribute_name)
                     if (
-                        isclass(attribute)
-                        and issubclass(attribute, ServiceBase)
-                        and not isabstract(attribute)
+                            isclass(attribute)
+                            and issubclass(attribute, ServiceBase)
+                            and not isabstract(attribute)
                     ):
                         # Add the class to this package's variables
                         self.module_names.append(module_name)

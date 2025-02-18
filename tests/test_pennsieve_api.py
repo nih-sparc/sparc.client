@@ -1,9 +1,6 @@
 import json
 
-import pytest
-import requests
 import responses
-from requests.exceptions import HTTPError
 
 from sparc.client.services import PennsieveService
 
