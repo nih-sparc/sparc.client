@@ -1,8 +1,6 @@
 import json
 import os
 
-import pytest
-
 from sparc.client import SparcClient
 
 test_dir = os.path.dirname(__file__)
@@ -12,10 +10,10 @@ config_file = os.path.join(config_dir, "config.ini")
 
 # Test client initialization
 def test_metadata_connect_false():
-    client = SparcClient(connect=False, config_file=config_file)
+    client1 = SparcClient(connect=False, config_file=config_file)
 
-    response = client.metadata.info()
-    client.metadata.close()
+    response = client1.metadata.info()
+    client1.metadata.close()
     assert response == "https://api.scicrunch.io/elastic/v1"
 
 
@@ -39,8 +37,6 @@ def test_metadata_info():
 
 # Test list datasets with no API key
 def test_metadata_search_datasets_nokey():
-    response = {}
-
     response = client.metadata.list_datasets()
     print("No Header: " + str(response) + " :End")
 
@@ -112,7 +108,7 @@ def test_metadata_api_key():
 # Test get URL with no headers
 def test_metadata_get_noheader():
     get_result = client.metadata.getURL(
-        "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", headers="NONE"
+        "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", headers=None
     )
 
     if get_result["status"] >= 400:
@@ -127,7 +123,7 @@ def test_metadata_post_noheader():
     body_json = json.loads(body)
 
     post_result = client.metadata.postURL(
-        "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", body_json, headers="NONE"
+        "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search", body_json, headers=None
     )
     print(str(post_result))
     if post_result["status"] >= 400:
@@ -152,4 +148,4 @@ def test_metadata_search_badbody():
 # Test close
 def test_metadata_close():
     close_result = client.metadata.close()
-    assert close_result == "https://api.scicrunch.io/elastic/v1"
+    assert close_result is None
