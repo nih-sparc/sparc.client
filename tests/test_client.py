@@ -15,7 +15,7 @@ def test_class(config_file):
 def test_config_no_section(test_resources_dir):
     config_file = os.path.join(test_resources_dir, "dummy_config.ini")
     with pytest.raises(KeyError):
-        a = SparcClient(config_file, connect=False)
+        SparcClient(config_file, connect=False)
 
 
 # Config non existing config
