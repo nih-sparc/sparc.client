@@ -3,7 +3,7 @@ name = "sparc.client"
 dynamic = ["version"]
 description = "NIH SPARC Python Client"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 license = {file = "LICENSE"}
 keywords = ["data science", "datasets"]
 authors = [

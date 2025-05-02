@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import logging
-import os
 
 import requests
 from pennsieve2 import Pennsieve
@@ -348,7 +349,7 @@ class PennsieveService(ServiceBase):
         -----------
         url : str
             The address of the server endpoint to be called (e.g. api.pennsieve.io/datasets).
-            The name of the server can be ommitted.
+            The name of the server can be omitted.
         kwargs : dict
             A dictionary storing additional information.
 
