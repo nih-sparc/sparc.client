@@ -1,6 +1,3 @@
-import json
-from pennsieve2 import Pennsieve
-
 from sparc.client.services.pennsieve import PennsieveService
 
 

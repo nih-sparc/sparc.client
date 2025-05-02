@@ -156,7 +156,7 @@ def test_connect_no_profile(mocker: MockerFixture):
     assert isinstance(o2p.connect(), osparc.ApiClient)
 
     with pytest.raises(osparc.ApiException) as exc_info:
-        _user_name = o2p.get_profile()
+        o2p.get_profile()
 
     error = exc_info.value
     assert error.status == HTTPStatus.UNAUTHORIZED
@@ -203,7 +203,7 @@ def test_submit_job(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2Sparc
 
     # test directory are not valid job inputs
     job_inputs: dict[str, Any] = {"my_dir": tmp_path}
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(RuntimeError):
         dummy_solver.submit_job(job_inputs)
 
     # test files are valid input files
@@ -258,7 +258,7 @@ def test_get_job_results(
     # check we cannot retrieve results if job not done
     job_status.stopped_at = None
     mocker.patch("osparc.SolversApi.inspect_job", return_value=job_status)
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(RuntimeError):
         job_id = dummy_solver.submit_job(job_inputs)
         dummy_results = dummy_solver.get_results(job_id)
 
@@ -289,7 +289,7 @@ def test_get_log(tmp_path: Path, mocker: MockerFixture, dummy_solver: O2SparcSol
     mocker.patch("osparc.SolversApi.get_job_output_logfile", return_value=str(tmp_path))
 
     # call solver to check we can retrieve dummy log
-    with pytest.raises(RuntimeError) as exc_info:
+    with pytest.raises(RuntimeError):
         log_dir = dummy_solver.get_job_log("job_id")
 
 
