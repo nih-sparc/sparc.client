@@ -63,6 +63,49 @@ jobs:
           repo-token: ${{ github.token }}
           tag: ${{ github.event.inputs.version }}
 
+      - name: Check for conventional commits
+        id: check_commits
+        run: |
+          git fetch --tags
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%s" | grep -E "^(feat|fix|chore|docs|style|refactor|perf|test)(\\(.+\\))?:")
+          echo "commits=$COMMITS" >> $GITHUB_OUTPUT
+
+      - name: Determine fallback label from PRs in commit range
+        id: label_check
+        run: |
+          git fetch --tags
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          CUR_TAG=${{ github.event.inputs.version }}
+          echo "Previous tag: $PREV_TAG"
+          echo "Current tag: $CUR_TAG"
+
+          # Get merged PRs between tags
+          PR_NUMBERS=$(git log $PREV_TAG..HEAD --merges --pretty=format:"%s" | grep -oE "#[0-9]+" | tr -d '#' | sort -u)
+
+          LABEL=""
+          for PR in $PR_NUMBERS; do
+            echo "Checking PR #$PR"
+            PR_LABEL=$(gh pr view $PR --json labels -q ".labels[].name" | grep -E "feat|fix|chore" | head -n 1)
+            if [ ! -z "$PR_LABEL" ]; then
+              LABEL=$PR_LABEL
+              break
+            fi
+          done
+
+          if [ -z "$LABEL" ]; then
+            LABEL="chore"
+          fi
+
+          echo "label=$LABEL" >> $GITHUB_OUTPUT
+
+      - name: Add fallback commit if no valid commits
+        if: ${{ steps.check_commits.outputs.commits == '' }}
+        run: |
+          TAG=${{ github.event.inputs.version }}
+          echo "Creating fallback commit with changelog link"
+          git commit --allow-empty -m "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/commits/$TAG"
+
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
