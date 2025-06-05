@@ -95,11 +95,10 @@ class ZincHelper:
         Raises:
             RuntimeError: If the dataset fails to download.
         """
-        file_list = self._pennsieveService.list_files(
-            limit, offset, file_type, query, organization, organization_id, dataset_id
-        )
-
         try:
+            file_list = self._pennsieveService.list_files(
+                limit, offset, file_type, query, organization, organization_id, dataset_id
+            )
             response = self._pennsieveService.download_file(file_list)
         except Exception:
             raise RuntimeError("The dataset failed to download.")
@@ -141,10 +140,7 @@ class ZincHelper:
         """
         self._get_scaffold(dataset_id)
 
-        if not output_location:
-            output_location = "."
-
-        ex = VTKExporter(output_location, "scaffold")
+        ex = VTKExporter("." if output_location is None else output_location, "scaffold")
         ex.export_vtk_from_scene(self._region.getScene())
 
     def get_scaffold_as_stl(self, dataset_id, output_location=None):
@@ -158,10 +154,7 @@ class ZincHelper:
         """
         self._get_scaffold(dataset_id)
 
-        if not output_location:
-            output_location = "."
-
-        ex = STLExporter(output_location, "scaffold")
+        ex = STLExporter("." if output_location is None else output_location, "scaffold")
         scene = self._region.getScene()
         surfaces = scene.createGraphicsSurfaces()
         surfaces.setBoundaryMode(surfaces.BOUNDARY_MODE_BOUNDARY)
@@ -266,12 +259,10 @@ class ZincHelper:
         not_in_scaffoldmaker = self.get_groups_not_in_scaffoldmaker(groupNames, get_terms)
 
         # Generate the analysis result message based on the suitability of the groups
-        if not_in_scaffoldmaker:
-            return (
+        return (
                 f"The data file {input_data_file_name} is suited for mapping to the given organ. "
                 f"However, {', '.join(not_in_scaffoldmaker)} groups cannot be handled by the mapping tool yet."
-            )
-        return f"The data file {input_data_file_name} is perfectly suited for mapping to the given organ."
+            ) if not_in_scaffoldmaker else f"The data file {input_data_file_name} is perfectly suited for mapping to the given organ."
 
     def get_groups_not_in_scaffoldmaker(self, group_names, get_terms):
         """

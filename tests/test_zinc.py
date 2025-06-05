@@ -18,11 +18,8 @@ def test_export_scaffold_into_vtk_format(zinc):
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
     result = None
-    try:
-        with pytest.raises(RuntimeError):
-            result = zinc.get_scaffold_as_vtk(invalid_dataset_id, output_location)
-    except TypeError:
-        pass
+    with pytest.raises(RuntimeError):
+        result = zinc.get_scaffold_as_vtk(invalid_dataset_id, output_location)
     assert result is None
 
     # ensure the function raises an error if the downloaded file is not scaffold_settings file
@@ -30,7 +27,7 @@ def test_export_scaffold_into_vtk_format(zinc):
     try:
         with pytest.raises(AssertionError):
             zinc.get_scaffold_as_vtk(dataset_id, output_location)
-    except TypeError:
+    except (RuntimeError, TypeError):
         pass
 
     # ensure the function generates a VTK file with valid content
@@ -48,7 +45,7 @@ def test_export_scaffold_into_vtk_format(zinc):
             # Clean up the temporary output file
             os.remove(output_file)
             found = True
-        except TypeError:
+        except (RuntimeError, TypeError):
             count += 1
             sleep(0.25)
 
@@ -60,11 +57,8 @@ def test_export_scaffold_into_stl_format(zinc):
     # ensure the function returns None if the dataset has no Scaffold_Creator-settings.json file
     invalid_dataset_id = 1000000
     result = None
-    try:
-        with pytest.raises(RuntimeError):
-            result = zinc.get_scaffold_as_stl(invalid_dataset_id, output_location)
-    except TypeError:
-        pass
+    with pytest.raises(RuntimeError):
+        result = zinc.get_scaffold_as_stl(invalid_dataset_id, output_location)
     assert result is None
 
     # ensure the function raises an error if the downloaded file is not scaffold_settings file
@@ -72,7 +66,7 @@ def test_export_scaffold_into_stl_format(zinc):
     try:
         with pytest.raises(AssertionError):
             zinc.get_scaffold_as_stl(dataset_id, output_location)
-    except TypeError:
+    except (RuntimeError, TypeError):
         pass
 
     # ensure the function generates an STL file with valid content
@@ -90,7 +84,7 @@ def test_export_scaffold_into_stl_format(zinc):
             # Clean up the temporary output file
             os.remove(output_file)
             found = True
-        except (TypeError, AssertionError):
+        except (RuntimeError, AssertionError):
             count += 1
             sleep(0.25)
 
@@ -127,7 +121,7 @@ def test_export_scaffold_into_vtk_format_with_default_output_location(zinc):
 
         # Clean up the temporary output file
         os.remove("scaffold_root.vtk")
-    except TypeError:
+    except (RuntimeError, TypeError):
         pass
 
 
