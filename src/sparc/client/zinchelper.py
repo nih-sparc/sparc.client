@@ -98,6 +98,7 @@ class ZincHelper:
         file_list = self._pennsieveService.list_files(
             limit, offset, file_type, query, organization, organization_id, dataset_id
         )
+
         try:
             response = self._pennsieveService.download_file(file_list)
         except Exception:
@@ -115,7 +116,7 @@ class ZincHelper:
         scaffold_setting_file = self.download_files(
             limit=1,
             file_type="JSON",
-            query="Scaffold-settings.json",
+            query=".*settings.json",
             dataset_id=dataset_id,
         )
         with open(scaffold_setting_file) as f:
@@ -198,7 +199,7 @@ class ZincHelper:
         contents = read_xml(segmentation_file)
         load(self._region, contents, None)
         ex = ExportVtk(self._region, "MBF XML VTK export.")
-        if not output_file:
+        if output_file is None:
             output_file = os.path.splitext(dataset_file)[0] + ".vtk"
         ex.writeFile(output_file)
         os.remove(segmentation_file)

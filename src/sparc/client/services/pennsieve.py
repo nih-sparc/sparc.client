@@ -307,7 +307,7 @@ class PennsieveService(ServiceBase):
         """
 
         # make sure we are passing a list
-        file_list = [file_list] if type(file_list) is dict else file_list
+        file_list = [file_list] if isinstance(file_list, dict) else file_list
 
         # create a tuple with datasetId and version of the dataset
         properties = set([(x["datasetId"], x["datasetVersion"]) for x in file_list])

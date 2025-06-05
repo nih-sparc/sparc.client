@@ -1,7 +1,7 @@
 import copy
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, TypeAlias
+from typing import Any, Dict
 from unittest.mock import MagicMock
 from zipfile import ZipFile
 
@@ -12,8 +12,8 @@ from pytest_mock import MockerFixture
 
 from sparc.client.services.o2sparc import O2SparcService, O2SparcSolver
 
-EnvVarsDict: TypeAlias = dict[str, str]
-Solver_Dict: TypeAlias = dict[str, str]
+EnvVarsDict = Dict[str, str]
+Solver_Dict = Dict[str, str]
 
 
 def generate_dummy_job(inputs: osparc.JobInputs) -> osparc.Job:
