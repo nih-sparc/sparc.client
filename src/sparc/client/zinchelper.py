@@ -259,10 +259,10 @@ class ZincHelper:
         not_in_scaffoldmaker = self.get_groups_not_in_scaffoldmaker(groupNames, get_terms)
 
         # Generate the analysis result message based on the suitability of the groups
-        return (
-                f"The data file {input_data_file_name} is suited for mapping to the given organ. "
-                f"However, {', '.join(not_in_scaffoldmaker)} groups cannot be handled by the mapping tool yet."
-            ) if not_in_scaffoldmaker else f"The data file {input_data_file_name} is perfectly suited for mapping to the given organ."
+        suited_text = f"The data file {input_data_file_name} is suited for mapping to the given organ."
+        not_in_text = f"However, the mapping tool does not have the following groups defined by default; {', '.join(not_in_scaffoldmaker)}."
+
+        return f"{suited_text} {not_in_text}" if not_in_scaffoldmaker else suited_text
 
     def get_groups_not_in_scaffoldmaker(self, group_names, get_terms):
         """
