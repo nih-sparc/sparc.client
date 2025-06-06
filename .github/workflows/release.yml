@@ -98,7 +98,8 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/${{ steps.check_commits.outputs.prev_tag }}...${{ github.event.inputs.version }}"
-          commit: "--allow-empty --force"
+          commit: "--allow-empty"
+          push: "--force"
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
