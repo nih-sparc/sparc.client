@@ -99,7 +99,13 @@ jobs:
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD)
           echo "Creating fallback commit with changelog link"
           git commit --allow-empty -m "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/$PREV_TAG...$CUR_TAG"
-          git push origin main
+
+      - name: Commit and push
+        if: ${{ steps.check_commits.outputs.commits == '' }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Push fallback commit"
+          pull: '--rebase --autostash'
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
