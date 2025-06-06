@@ -99,7 +99,7 @@ jobs:
         with:
           message: "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/${{ steps.check_commits.outputs.prev_tag }}...${{ github.event.inputs.version }}"
           commit: "--allow-empty"
-          push: "--force"
+          push: "origin main --force"
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
