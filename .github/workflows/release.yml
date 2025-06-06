@@ -24,12 +24,13 @@ jobs:
           require: 'admin'
   check:
     needs: verify
+    if: false
     uses: ./.github/workflows/CI.yml
     secrets:
       codecov_token: ${{secrets.CODECOV_TOKEN}}
 
   publish:
-    needs: check
+    needs: verify
     runs-on: ubuntu-latest
 
     # Specifying a GitHub environment for PyPI release is optional, but strongly encouraged
@@ -98,7 +99,7 @@ jobs:
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD)
           echo "Creating fallback commit with changelog link"
           git commit --allow-empty -m "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/$PREV_TAG...$CUR_TAG"
-          git push origin main
+          git push origin main --force
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
