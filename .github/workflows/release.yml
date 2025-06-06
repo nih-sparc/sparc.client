@@ -66,7 +66,7 @@ jobs:
         run: |
           git fetch --tags
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
-          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%s" | grep -E "^(feat|fix|chore|docs|style|refactor|perf|test)(\\(.+\\))?:")
+          COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%s" | grep -E "^(feat|fix|chore|docs|style|refactor|perf|test)(\\(.+\\))?:" || true)
           echo "commits=$COMMITS" >> $GITHUB_OUTPUT
 
       - name: Determine fallback label from PRs in commit range
