@@ -103,11 +103,9 @@ jobs:
 
       - name: Add fallback commit if no valid commits
         if: ${{ steps.check_commits.outputs.commits == '' }}
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/${{ steps.check_commits.outputs.prev_tag }}...${{ github.event.inputs.version }}"
-          commit: "--allow-empty"
-          push: "origin main"
+        run: |
+          git commit --allow-empty -m "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/${{ steps.check_commits.outputs.prev_tag }}...${{ github.event.inputs.version }}"
+          git push origin main
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
