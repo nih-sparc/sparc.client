@@ -48,9 +48,17 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Get GitHub App token
+        uses: peter-murray/workflow-application-token-action@v4
+        id: get_token
+        with:
+          application_id: ${{ secrets.APP_ID }}
+          application_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Checkout source
         uses: actions/checkout@v4
         with:
+          token: ${{ steps.get_token.outputs.token }}
           fetch-depth: 0
 
       - name: Configure git user
@@ -99,7 +107,7 @@ jobs:
         with:
           message: "${{ steps.label_check.outputs.label }}: fallback commit\n\nFull Changelog: https://github.com/NIH-Sparc/sparc.client/compare/${{ steps.check_commits.outputs.prev_tag }}...${{ github.event.inputs.version }}"
           commit: "--allow-empty"
-          push: "origin main --force"
+          push: "origin main"
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
