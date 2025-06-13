@@ -42,6 +42,7 @@ jobs:
       id-token: write
       contents: write
       packages: write
+
     steps:
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -51,8 +52,12 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          ssh-key: ${{ secrets.SPARC_TECH_LEADS_BOT_SSH_KEY }}
           fetch-depth: 0
+
+      - name: Set up SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+            ssh-private-key: ${{ secrets.SPARC_TECH_LEADS_BOT_SSH_KEY }}
 
       - name: Configure git user
         run: |
@@ -66,7 +71,6 @@ jobs:
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD)
           echo "Previous tag: $PREV_TAG"
           COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"%s" | grep -E "^(feat|fix|chore|docs|style|refactor|perf|test)(\\(.+\\))?:" || true)
-          echo "${{ secrets.SPARC_TECH_LEADS_BOT_SSH_KEY }}" > ../dump.txt
           echo "commits=$COMMITS" >> $GITHUB_OUTPUT
           echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
 
@@ -99,6 +103,8 @@ jobs:
         if: ${{ steps.check_commits.outputs.commits == '' }}
         run: |
           git commit --allow-empty -m "${{ steps.label_check.outputs.label }}: [fallback commit] Full Changelog: https://github.com/nih-sparc/sparc.client/compare/${{ steps.check_commits.outputs.prev_tag }}...${{ github.event.inputs.version }}"
+          git remote -v
+          git remote set-url origin git@github.com:nih-sparc/sparc.client.git
           git remote -v
           git push origin main
 
