@@ -110,14 +110,14 @@ jobs:
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.2
         with:
-          repo-token: ${{ github.token }}
+          repo-token: ${{ secrets.SPARC_TECH_LEADS_BOT_SSH_KEY }}
           tag: ${{ github.event.inputs.version }}
 
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
         with:
-          token: ${{ github.token }}
+          token: ${{ secrets.SPARC_TECH_LEADS_BOT_SSH_KEY }}
           tag: ${{ github.event.inputs.version }}
 
       - name: Commit and push CHANGELOG.md
