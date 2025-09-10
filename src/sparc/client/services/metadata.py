@@ -59,7 +59,6 @@ class MetadataService(ServiceBase):
         self, config: Optional[Union[dict, SectionProxy]] = None, connect: bool = False
     ) -> None:
         logging.info("Initializing SPARC K-Core Elasticsearch services...")
-        logging.debug(str(config))
 
         self.host_api = "https://api.scicrunch.io/elastic/v1"
         self.algolia_api = "https://api.scicrunch.io/elastic/v1/SPARC_Algolia_pr/_search"

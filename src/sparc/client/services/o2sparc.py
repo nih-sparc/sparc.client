@@ -136,7 +136,7 @@ class O2SparcSolver:
 
         Returns:
         --------
-        A tempfile.TemporaryDirectory holding the log files
+        A temporary directory. TemporaryDirectory holding the log files
         """
         logfile_path: str = self._solvers_api.get_job_output_logfile(
             self._solver.id, self._solver.version, job_id
@@ -157,7 +157,6 @@ class O2SparcService(ServiceBase):
     def __init__(self, config: dict[str, Any] | SectionProxy | None = None, connect: bool = True) -> None:
         config = config or {}
         logging.info("Initializing o2sparc...")
-        logging.debug("%s", f"{config=}")
 
         kwargs = {}
         for name in ("host", "username", "password"):
@@ -167,10 +166,9 @@ class O2SparcService(ServiceBase):
             if value is not None:
                 kwargs[name] = value
 
-        logging.debug(f"Config arguments:{kwargs}")
         configuration = osparc.Configuration(**kwargs)
 
-        # reuses profile-name from penssieve to set debug mode
+        # reuses profile-name from Pennsieve to set debug mode
         profile_name = config.get("pennsieve_profile_name", "prod")
         configuration.debug = profile_name == "test"
 
@@ -180,7 +178,7 @@ class O2SparcService(ServiceBase):
             self.connect()
 
     def connect(self) -> osparc.ApiClient:
-        """Explicitily initializes client pool (not required)"""
+        """Explicitly initializes client pool (not required)"""
         p = self._client.pool
         logging.debug("%s was initialized", p)
         return self._client
